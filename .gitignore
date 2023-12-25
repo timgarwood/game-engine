@@ -30,3 +30,9 @@
 *.exe
 *.out
 *.app
+
+CMakeFiles
+CMakeFiles\*
+CMakeCache.txt*
+*.ninja*
+cmake_install.cmake
