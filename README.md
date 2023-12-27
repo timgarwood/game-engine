@@ -16,4 +16,4 @@ use the UCRT version of mingw for everything
 
 ## To build:
 #### - cmake .
-#### - ninja
+#### - ninja -v
