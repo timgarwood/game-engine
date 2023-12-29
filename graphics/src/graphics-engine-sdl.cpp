@@ -1,7 +1,12 @@
 #include "graphics-engine.h"
 #include "engine-api.h"
+#include <GL/glew.h>
 #include "SDL2/SDL.h"
 #include <stddef.h>
+#include <GL/gl.h>
+#include <iostream>
+
+using namespace std;
 
 GraphicsEngine *GraphicsEngine::s_instance = NULL;
 SDL_Window *s_window = NULL;
@@ -47,6 +52,14 @@ void GraphicsEngine::NextFrame(void)
         // TODO throw exception
     }
 
+    glClear(GL_COLOR_BUFFER_BIT);
+
+    auto iter = m_render_callbacks.begin();
+    for (; iter != m_render_callbacks.end(); ++iter)
+    {
+        (*iter)();
+    }
+
     SDL_GL_SwapWindow(s_window);
 }
 
@@ -65,6 +78,14 @@ void GraphicsEngine::Init(void)
     SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE, 8);
     SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE, 8);
     SDL_GL_SetAttribute(SDL_GL_ALPHA_SIZE, 8);
+
+    // Must be done after glut is initialized!
+    GLenum res = glewInit();
+    if (res != GLEW_OK)
+    {
+        cerr << "Error: " << glewGetErrorString(res);
+        return;
+    }
 }
 
 void GraphicsEngine::TearDown(void)
@@ -72,4 +93,14 @@ void GraphicsEngine::TearDown(void)
     SDL_DestroyWindow(s_window);
     SDL_QuitSubSystem(SDL_INIT_VIDEO);
     s_window = NULL;
+}
+
+void GraphicsEngine::RegisterRenderCallback(render_callback callback)
+{
+    m_render_callbacks.push_back(callback);
+}
+
+void GraphicsEngine::UnregisterRenderCallback(render_callback callback)
+{
+    m_render_callbacks.remove(callback);
 }
