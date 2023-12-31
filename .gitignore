@@ -36,3 +36,5 @@ CMakeFiles\*
 CMakeCache.txt*
 *.ninja*
 cmake_install.cmake
+.vscode
+.vscode\*

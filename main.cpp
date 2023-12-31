@@ -12,6 +12,10 @@
 #include "triangle-demo.h"
 #endif
 
+#ifdef SHADER_UNIFORM_DEMO
+#include "shader-uniform-demo.h"
+#endif
+
 int main(int argc, char **argv)
 {
     Engine *e = Engine::Instance();
@@ -20,6 +24,8 @@ int main(int argc, char **argv)
     SinglePointDemo *spd = SinglePointDemo::Instance();
 #elif TRIANGLE_DEMO
     TriangleDemo *td = TriangleDemo::Instance();
+#elif SHADER_UNIFORM_DEMO
+    ShaderUniformDemo *sud = ShaderUniformDemo::Instance();
 #endif
 
     e->Init();
