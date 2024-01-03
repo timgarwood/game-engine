@@ -16,6 +16,10 @@
 #include "shader-uniform-demo.h"
 #endif
 
+#ifdef SHADER_TRANSLATION_DEMO
+#include "shader-translation-demo.h"
+#endif
+
 int main(int argc, char **argv)
 {
     Engine *e = Engine::Instance();
@@ -26,6 +30,8 @@ int main(int argc, char **argv)
     TriangleDemo *td = TriangleDemo::Instance();
 #elif SHADER_UNIFORM_DEMO
     ShaderUniformDemo *sud = ShaderUniformDemo::Instance();
+#elif SHADER_TRANSLATION_DEMO
+    ShaderTranslationDemo *std = ShaderTranslationDemo::Instance();
 #endif
 
     e->Init();
