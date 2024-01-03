@@ -6,23 +6,23 @@
 #include <gl/gl.h>
 #include <gl/glu.h>
 
-class ShaderTranslationDemo
+class ShaderRotationDemo
 {
 private:
-    static ShaderTranslationDemo *s_instance;
-    ShaderTranslationDemo();
+    static ShaderRotationDemo *s_instance;
+    ShaderRotationDemo();
 
     Vector3f m_vertices[3];
     GLuint m_vbo;
     GLuint m_vertexShaderObject;
     GLuint m_fragmentShaderObject;
     GLuint m_shaderProgram;
-    GLint m_translationLocation;
+    GLint m_rotationLocation;
     float m_delta;
-    float m_translation;
+    float m_rotation;
 
 public:
-    static ShaderTranslationDemo *Instance(void);
+    static ShaderRotationDemo *Instance(void);
     void Init(void);
     void Render(void);
 

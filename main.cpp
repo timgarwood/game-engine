@@ -20,6 +20,10 @@
 #include "shader-translation-demo.h"
 #endif
 
+#ifdef SHADER_ROTATION_DEMO
+#include "shader-rotation-demo.h"
+#endif
+
 int main(int argc, char **argv)
 {
     Engine *e = Engine::Instance();
@@ -32,6 +36,8 @@ int main(int argc, char **argv)
     ShaderUniformDemo *sud = ShaderUniformDemo::Instance();
 #elif SHADER_TRANSLATION_DEMO
     ShaderTranslationDemo *std = ShaderTranslationDemo::Instance();
+#elif SHADER_ROTATION_DEMO
+    ShaderRotationDemo *srd = ShaderRotationDemo::Instance();
 #endif
 
     e->Init();

@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.10.0)
 
 project(engine)
 
-SET(SHADER_TRANSLATION_DEMO 1)
+SET(SHADER_ROTATION_DEMO 1)
 SET(CMAKE_BUILD_TYPE Debug)
 
 SET(CMAKE_CXX_COMPILER g++)
@@ -26,6 +26,11 @@ elseif(SHADER_TRANSLATION_DEMO)
 add_compile_definitions(SHADER_TRANSLATION_DEMO)
 set(DEMO_SOURCES
     demo/shader-translation-demo.cpp
+)
+elseif(SHADER_ROTATION_DEMO)
+add_compile_definitions(SHADER_ROTATION_DEMO)
+set(DEMO_SOURCES
+    demo/shader-rotation-demo.cpp
 )
 endif()
 
