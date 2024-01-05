@@ -57,7 +57,7 @@ void ShaderRotationDemo::compile_shaders(GLuint *shaderProgram, GLuint *vertexSh
         exit(1);
     }
 
-    string vs = "#version 330 core\nlayout(location = 0) in vec3 Position;\nuniform mat4 gRotation;\nvoid main()\n{\ngl_Position = gRotation * vec4(Position, 1.0);\n}\n";
+    string vs = "#version 330 core\nlayout(location = 0) in vec3 Position;\nuniform mat4 gRotation;\nuniform mat4 gTranslation;\nvoid main()\n{\ngl_Position = gRotation * gTranslation * vec4(Position, 1.0);\n}\n";
     string fs = "#version 330 core\nout vec4 FragColor;\nvoid main()\n{\nFragColor = vec4(1.0,0.0,0.0,0.0);\n}";
 
     add_shader(*shaderProgram, vertexShaderObject, vs.c_str(), GL_VERTEX_SHADER);
@@ -77,9 +77,15 @@ void ShaderRotationDemo::compile_shaders(GLuint *shaderProgram, GLuint *vertexSh
     }
 
     m_rotationLocation = glGetUniformLocation(*shaderProgram, "gRotation");
+    m_translationLocation = glGetUniformLocation(*shaderProgram, "gTranslation");
     if (m_rotationLocation == -1)
     {
         cout << "Error getting uniform location of 'gRotation'" << endl;
+        exit(1);
+    }
+    if (m_translationLocation == -1)
+    {
+        cout << "Error getting uniform location of 'gTranslation'" << endl;
         exit(1);
     }
 
@@ -125,36 +131,54 @@ ShaderRotationDemo *ShaderRotationDemo::Instance(void)
 
 void ShaderRotationDemo::Init(void)
 {
-    m_rotation = 0.0f;
-    m_delta = 0.1f;
-    m_vertices[0] = Vector3f(0.0f, 0.0f, 0.0f);
-    m_vertices[1] = Vector3f(0.5f, 0.5f, 0.0f);
-    m_vertices[2] = Vector3f(0.5f, 0.0f, 0.0f);
+    m_triangle1 = Triangle(Vector3f(0.0f, 0.0f, 0.0f),
+                           Vector3f(0.5f, 0.0f, 0.0f),
+                           Vector3f(0.5f, 0.5f, 0.0f));
+    m_triangle1.rotation = 0.0f;
+    m_triangle1.rotationDelta = 0.1f;
 
-    glGenBuffers(1, &m_vbo);
-    glBindBuffer(GL_ARRAY_BUFFER, m_vbo);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(m_vertices), m_vertices, GL_STATIC_DRAW);
+    m_triangle1.translationMatrix = Matrix4f(1, 0, 0, -0.35,
+                                             0, 1, 0, -0.125,
+                                             0, 0, 1, 1,
+                                             0, 0, 0, 1);
+
+    m_triangle2 = Triangle(Vector3f(-0.5f, -0.5f, 0.0f),
+                           Vector3f(0.0f, -0.5f, 0.0f),
+                           Vector3f(0.0f, 0.0f, 0.0f));
+
+    m_triangle2.rotation = 0.0f;
+    m_triangle2.rotationDelta = -0.1f;
+
+    m_triangle2.translationMatrix = Matrix4f(1, 0, 0, 0,
+                                             0, 1, 0, 0,
+                                             0, 0, 1, 1,
+                                             0, 0, 0, 1);
+
+    glGenBuffers(1, &m_triangle1.vbo);
+    glGenBuffers(1, &m_triangle2.vbo);
 
     compile_shaders(&m_shaderProgram, &m_vertexShaderObject, &m_fragmentShaderObject);
 }
 
-void ShaderRotationDemo::Render(void)
+void ShaderRotationDemo::DrawTriangle(Triangle &triangle)
 {
-    if (m_rotation >= 2 * 3.14159 && m_delta > 0)
+    if (fabsf(triangle.rotation) >= 2 * 3.14159)
     {
-        m_rotation = 0;
+        triangle.rotation = 0;
     }
 
-    m_rotation += m_delta;
+    triangle.rotation += triangle.rotationDelta;
 
-    Matrix4f rotation(cosf(m_rotation), -sinf(m_rotation), 0, 0,
-                      sinf(m_rotation), cosf(m_rotation), 0, 0,
-                      0, 0, 1, 0,
-                      0, 0, 0, 1);
+    triangle.rotationMatrix = Matrix4f(cosf(triangle.rotation), -sinf(triangle.rotation), 0, 0,
+                                       sinf(triangle.rotation), cosf(triangle.rotation), 0, 0,
+                                       0, 0, 1, 0,
+                                       0, 0, 0, 1);
 
-    glUniformMatrix4fv(m_rotationLocation, 1, GL_TRUE, &rotation.matrix[0][0]);
+    glUniformMatrix4fv(m_rotationLocation, 1, GL_TRUE, &triangle.rotationMatrix.matrix[0][0]);
+    glUniformMatrix4fv(m_translationLocation, 1, GL_TRUE, &triangle.translationMatrix.matrix[0][0]);
 
-    glBindBuffer(GL_ARRAY_BUFFER, m_vbo);
+    glBindBuffer(GL_ARRAY_BUFFER, m_triangle1.vbo);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(triangle.vertices), triangle.vertices, GL_DYNAMIC_DRAW);
 
     glEnableVertexAttribArray(0);
 
@@ -163,4 +187,12 @@ void ShaderRotationDemo::Render(void)
     glDrawArrays(GL_TRIANGLES, 0, 3);
 
     glDisableVertexAttribArray(0);
+
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+}
+
+void ShaderRotationDemo::Render(void)
+{
+    DrawTriangle(m_triangle1);
+    DrawTriangle(m_triangle2);
 }

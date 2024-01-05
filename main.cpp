@@ -24,6 +24,14 @@
 #include "shader-rotation-demo.h"
 #endif
 
+#ifdef SHADER_INTERPOLATION_DEMO
+#include "shader-interpolation-demo.h"
+#endif
+
+#ifdef INDEX_BUFFER_DEMO
+#include "index-buffer-demo.h"
+#endif
+
 int main(int argc, char **argv)
 {
     Engine *e = Engine::Instance();
@@ -38,6 +46,10 @@ int main(int argc, char **argv)
     ShaderTranslationDemo *std = ShaderTranslationDemo::Instance();
 #elif SHADER_ROTATION_DEMO
     ShaderRotationDemo *srd = ShaderRotationDemo::Instance();
+#elif SHADER_INTERPOLATION_DEMO
+    ShaderInterpolationDemo *sid = ShaderInterpolationDemo::Instance();
+#elif INDEX_BUFFER_DEMO
+    IndexBufferDemo *ibd = IndexBufferDemo::Instance();
 #endif
 
     e->Init();

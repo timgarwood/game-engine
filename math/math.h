@@ -2,6 +2,7 @@
 #define _MATH_H
 
 #include <cstring> // memset
+#include <gl/gl.h>
 
 struct Vector3f
 {
@@ -22,6 +23,27 @@ struct Vector3f
     float x;
     float y;
     float z;
+};
+
+struct Vector3i
+{
+    Vector3i()
+    {
+        x = 0;
+        y = 0;
+        z = 0;
+    }
+
+    Vector3i(int x, int y, int z)
+    {
+        this->x = x;
+        this->y = y;
+        this->z = z;
+    }
+
+    int x;
+    int y;
+    int z;
 };
 
 struct Matrix4f
@@ -56,6 +78,37 @@ struct Matrix4f
         matrix[3][1] = a13;
         matrix[3][2] = a14;
         matrix[3][3] = a15;
+    }
+};
+
+struct Triangle
+{
+    Vector3f vertices[3];
+    Matrix4f translationMatrix;
+    Matrix4f rotationMatrix;
+    float rotation;
+    float rotationDelta;
+    GLuint vbo;
+
+    Triangle()
+    {
+        memset(vertices, 0, sizeof(vertices));
+        memset(&translationMatrix, 0, sizeof(Matrix4f));
+        memset(&rotationMatrix, 0, sizeof(Matrix4f));
+
+        rotation = 0.0f;
+    }
+
+    Triangle(Vector3f one, Vector3f two, Vector3f three)
+    {
+        vertices[0] = one;
+        vertices[1] = two;
+        vertices[2] = three;
+
+        memset(&translationMatrix, 0, sizeof(Matrix4f));
+        memset(&rotationMatrix, 0, sizeof(Matrix4f));
+
+        rotation = 0.0f;
     }
 };
 
