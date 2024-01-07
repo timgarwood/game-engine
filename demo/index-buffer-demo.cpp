@@ -9,8 +9,12 @@
 #include <iostream>
 #include <cstring>
 #include "file-utils.h"
+#include <time.h>
 
 using namespace std;
+
+float max_color = 255.0f;
+#define RAND_COLOR Vector3f((float)(rand() % 255) / max_color, (float)(rand() % 255) / max_color, (float)(rand() % 255) / max_color)
 
 void IndexBufferDemo::add_shader(GLuint shaderProgram, GLuint *shaderObject, const char *pShaderText, GLenum shaderType)
 {
@@ -58,8 +62,8 @@ void IndexBufferDemo::compile_shaders(GLuint *shaderProgram, GLuint *vertexShade
     }
 
     string vs, fs;
-    read_file(vs, "./demo/shader-interpolation-demo.vs");
-    read_file(fs, "./demo/shader-interpolation-demo.fs");
+    read_file(vs, "./demo/index-buffer-demo.vs");
+    read_file(fs, "./demo/index-buffer-demo.fs");
 
     add_shader(*shaderProgram, vertexShaderObject, vs.c_str(), GL_VERTEX_SHADER);
     add_shader(*shaderProgram, fragmentShaderObject, fs.c_str(), GL_FRAGMENT_SHADER);
@@ -119,21 +123,25 @@ IndexBufferDemo *IndexBufferDemo::Instance(void)
 
 void IndexBufferDemo::Init(void)
 {
-    m_vertices[0] = Vector3f(0.0f, 0.0f, 0.0f);
-    m_vertices[1] = Vector3f(-0.5f, 0.5f, 0.0f);
-    m_vertices[2] = Vector3f(-0.25f, 0.5f, 0.0f);
-    m_vertices[3] = Vector3f(0.0f, 0.5f, 0.0f);
-    m_vertices[4] = Vector3f(0.25f, 0.5f, 0.0f);
-    m_vertices[5] = Vector3f(-0.5f, -0.5f, 0.0f);
-    m_vertices[6] = Vector3f(-0.25f, -0.5f, 0.0f);
-    m_vertices[7] = Vector3f(0.0f, -0.5f, 0.0f);
-    m_vertices[8] = Vector3f(0.25f, 0.5f, 0.0f);
+    time_t t;
+    srand((unsigned)time(&t));
+
+    m_vertices[0] = Vertex3f(Vector3f(0.0f, 0.0f, 0.0f), RAND_COLOR);
+    m_vertices[1] = Vertex3f(Vector3f(-0.5f, 0.5f, 0.0f), RAND_COLOR);
+    m_vertices[2] = Vertex3f(Vector3f(-0.25f, 0.5f, 0.0f), RAND_COLOR);
+    m_vertices[3] = Vertex3f(Vector3f(0.0f, 0.5f, 0.0f), RAND_COLOR);
+    m_vertices[4] = Vertex3f(Vector3f(0.25f, 0.5f, 0.0f), RAND_COLOR);
+    m_vertices[5] = Vertex3f(Vector3f(-0.5f, -0.5f, 0.0f), RAND_COLOR);
+    m_vertices[6] = Vertex3f(Vector3f(-0.25f, -0.5f, 0.0f), RAND_COLOR);
+    m_vertices[7] = Vertex3f(Vector3f(0.0f, -0.5f, 0.0f), RAND_COLOR);
+    m_vertices[8] = Vertex3f(Vector3f(0.25f, -0.5f, 0.0f), RAND_COLOR);
 
     m_indexes[0] = Vector3i(0, 2, 1);
     m_indexes[1] = Vector3i(0, 3, 2);
     m_indexes[2] = Vector3i(0, 4, 3);
     m_indexes[3] = Vector3i(5, 6, 0);
     m_indexes[4] = Vector3i(6, 7, 0);
+    m_indexes[5] = Vector3i(7, 8, 0);
 
     glGenBuffers(1, &m_vbo);
     glBindBuffer(GL_ARRAY_BUFFER, m_vbo);
@@ -148,15 +156,28 @@ void IndexBufferDemo::Init(void)
 
 void IndexBufferDemo::Render(void)
 {
+    m_vertices[0] = Vertex3f(Vector3f(0.0f, 0.0f, 0.0f), RAND_COLOR);
+    m_vertices[1] = Vertex3f(Vector3f(-0.5f, 0.5f, 0.0f), RAND_COLOR);
+    m_vertices[2] = Vertex3f(Vector3f(-0.25f, 0.5f, 0.0f), RAND_COLOR);
+    m_vertices[3] = Vertex3f(Vector3f(0.0f, 0.5f, 0.0f), RAND_COLOR);
+    m_vertices[4] = Vertex3f(Vector3f(0.25f, 0.5f, 0.0f), RAND_COLOR);
+    m_vertices[5] = Vertex3f(Vector3f(-0.5f, -0.5f, 0.0f), RAND_COLOR);
+    m_vertices[6] = Vertex3f(Vector3f(-0.25f, -0.5f, 0.0f), RAND_COLOR);
+    m_vertices[7] = Vertex3f(Vector3f(0.0f, -0.5f, 0.0f), RAND_COLOR);
+    m_vertices[8] = Vertex3f(Vector3f(0.25f, -0.5f, 0.0f), RAND_COLOR);
+
     glBindBuffer(GL_ARRAY_BUFFER, m_vbo);
 
     glEnableVertexAttribArray(0);
+    glEnableVertexAttribArray(1);
 
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 6, 0);
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 6, (void *)(sizeof(float) * 3));
 
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_ibo);
 
-    glDrawElements(GL_TRIANGLES, 15, GL_UNSIGNED_INT, 0);
+    glDrawElements(GL_TRIANGLES, 18, GL_UNSIGNED_INT, 0);
 
     glDisableVertexAttribArray(0);
+    glDisableVertexAttribArray(1);
 }

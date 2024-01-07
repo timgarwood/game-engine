@@ -25,6 +25,24 @@ struct Vector3f
     float z;
 };
 
+struct Vertex3f
+{
+    Vertex3f()
+    {
+        memset(&coords, 0, sizeof(Vector3f));
+        memset(&color, 0, sizeof(Vector3f));
+    }
+
+    Vertex3f(Vector3f coords, Vector3f color)
+    {
+        this->coords = coords;
+        this->color = color;
+    }
+
+    Vector3f coords;
+    Vector3f color;
+};
+
 struct Vector3i
 {
     Vector3i()

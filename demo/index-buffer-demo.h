@@ -12,8 +12,8 @@ private:
     static IndexBufferDemo *s_instance;
     IndexBufferDemo();
 
-    Vector3f m_vertices[9];
-    Vector3i m_indexes[3 * 6]; // 6 triangles
+    Vertex3f m_vertices[9];
+    Vector3i m_indexes[6]; // 6 triangles
     GLuint m_vbo;
     GLuint m_ibo;
     GLuint m_vertexShaderObject;
