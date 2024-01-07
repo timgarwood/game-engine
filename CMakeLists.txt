@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.10.0)
 
 project(engine)
 
-SET(INDEX_BUFFER_DEMO 1)
+SET(PERSPECTIVE_PROJECTION_DEMO 1)
 SET(CMAKE_BUILD_TYPE Debug)
 
 SET(CMAKE_CXX_COMPILER g++)
@@ -41,6 +41,11 @@ elseif(INDEX_BUFFER_DEMO)
 add_compile_definitions(INDEX_BUFFER_DEMO)
 set(DEMO_SOURCES
     demo/index-buffer-demo.cpp
+)
+elseif(PERSPECTIVE_PROJECTION_DEMO)
+add_compile_definitions(PERSPECTIVE_PROJECTION_DEMO)
+set(DEMO_SOURCES
+    demo/perspective-projection-demo.cpp
 )
 endif()
 

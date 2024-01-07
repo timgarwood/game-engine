@@ -32,6 +32,10 @@
 #include "index-buffer-demo.h"
 #endif
 
+#ifdef PERSPECTIVE_PROJECTION_DEMO
+#include "perspective-projection-demo.h"
+#endif
+
 int main(int argc, char **argv)
 {
     Engine *e = Engine::Instance();
@@ -50,6 +54,8 @@ int main(int argc, char **argv)
     ShaderInterpolationDemo *sid = ShaderInterpolationDemo::Instance();
 #elif INDEX_BUFFER_DEMO
     IndexBufferDemo *ibd = IndexBufferDemo::Instance();
+#elif PERSPECTIVE_PROJECTION_DEMO
+    PerspectiveProjectionDemo *ppd = PerspectiveProjectionDemo::Instance();
 #endif
 
     e->Init();
