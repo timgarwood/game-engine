@@ -17,6 +17,11 @@ using namespace std;
 float max_color = 255.0f;
 #define RAND_COLOR Vector3f((float)(rand() % 255) / max_color, (float)(rand() % 255) / max_color, (float)(rand() % 255) / max_color)
 
+static float m_cameraDelta = 0.0;
+
+#define WINDOW_WIDTH 640
+#define WINDOW_HEIGHT 480
+
 void PerspectiveProjectionDemo::add_shader(GLuint shaderProgram, GLuint *shaderObject, const char *pShaderText, GLenum shaderType)
 {
     *shaderObject = glCreateShader(shaderType);
@@ -135,12 +140,6 @@ void PerspectiveProjectionDemo::Init(void)
                                        0, 0, 1, 0,
                                        0, 0, 0, 1);
 
-    float fov = 90.0f * 3.14159 / 180.0f;
-    m_perspectiveProjection = Matrix4f(1 / tanf(fov / 2.0f), 0, 0, 0,
-                                       0, 1 / tanf(fov / 2.0f), 0, 0,
-                                       0, 0, 1, 0,
-                                       0, 0, 1, 0);
-
     m_vertices[0] = Vertex3f(Vector3f(0.5f, 0.5f, 0.5f), RAND_COLOR);
     m_vertices[1] = Vertex3f(Vector3f(-0.5f, 0.5f, -0.5f), RAND_COLOR);
     m_vertices[2] = Vertex3f(Vector3f(-0.5f, 0.5f, 0.5f), RAND_COLOR);
@@ -190,8 +189,30 @@ void PerspectiveProjectionDemo::Render(void)
         m_rotation = 0;
     }
 
-    Matrix4f translation(1, 0, 0, -0.4,
-                         0, 1, 0, 0.8,
+    m_cameraDelta += 0.04;
+    if (m_cameraDelta * 2 > 3.14159)
+    {
+        m_cameraDelta = 0;
+    }
+
+    float fov = 90.0f * 3.14159 / 180.0f;
+    float aspect_ratio = (float)WINDOW_WIDTH / (float)WINDOW_HEIGHT;
+
+    // these get mapped into the -1 to 1 range
+    // the rasterizer then controls which z values are visible
+    float zfar = 2.5;
+    float znear = 1.0;
+
+    float a = -1 - ((2 * zfar * znear) / (znear - zfar));
+    float b = (2 * znear * zfar) / (znear - zfar);
+
+    m_perspectiveProjection = Matrix4f(1 / aspect_ratio * tanf((fov / 2.0f)), 0, 0, 0,
+                                       0, 1 / tanf(fov / 2.0f), 0, 0,
+                                       0, 0, a, b,
+                                       0, 0, 1, 0);
+
+    Matrix4f translation(1, 0, 0, 0,
+                         0, 1, 0, 0,
                          0, 0, 1, 3,
                          0, 0, 0, 1);
 
