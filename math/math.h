@@ -98,7 +98,7 @@ struct Matrix4f
         matrix[3][3] = a15;
     }
 
-    Matrix4f multiply(const Matrix4f &other)
+    Matrix4f operator*(const Matrix4f &other)
     {
         return Matrix4f(
             (matrix[0][0] * other.matrix[0][0]) + (matrix[0][1] * other.matrix[1][0]) + (matrix[0][2] * other.matrix[2][0]) + (matrix[0][3] * other.matrix[3][0]), // row 0 col 0

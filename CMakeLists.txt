@@ -60,8 +60,13 @@ SET(FILE_SOURCES
 set(GRAPHICS_SOURCES 
     graphics/src/graphics-engine-sdl.cpp)
 
+set(SHADER_SOURCES 
+    shaders/shader-parser.cpp
+    shaders/shader-factory.cpp
+    shaders/shader-program.cpp) 
+
 set(ENGINE_LIBS
-    stdc++ opengl32 glu32 sdl2 glew32)
+    stdc++ opengl32 glu32 sdl2 glew32 jsoncpp)
 
 set(ENGINE_INCLUDES
     file
@@ -69,9 +74,10 @@ set(ENGINE_INCLUDES
     demo
     engine/api
     engine/inc
-    graphics/inc)
+    graphics/inc
+    shaders)
 
-add_executable(engine main.cpp ${ENGINE_SOURCES} ${GRAPHICS_SOURCES} ${DEMO_SOURCES} ${FILE_SOURCES})
+add_executable(engine main.cpp ${ENGINE_SOURCES} ${GRAPHICS_SOURCES} ${DEMO_SOURCES} ${FILE_SOURCES} ${SHADER_SOURCES})
 
 target_link_libraries(engine ${ENGINE_LIBS})
 

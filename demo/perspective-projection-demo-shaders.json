@@ -1,0 +1,17 @@
+{
+    "programs": [
+        {
+            "name": "main",
+            "shaders": [
+                {
+                    "type": "fragment",
+                    "file": "./demo/perspective-projection-demo.fs"
+                },
+                {
+                    "type": "vertex",
+                    "file": "./demo/perspective-projection-demo.vs"
+                }
+            ]
+        }
+    ]
+}

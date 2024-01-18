@@ -5,6 +5,9 @@
 #include <gl/glew.h>
 #include <gl/gl.h>
 #include <gl/glu.h>
+#include <memory>
+
+class ShaderProgramIF;
 
 class PerspectiveProjectionDemo
 {
@@ -18,20 +21,16 @@ private:
     GLuint m_ibo;
     GLuint m_vertexShaderObject;
     GLuint m_fragmentShaderObject;
-    GLuint m_shaderProgram;
     float m_delta;
     float m_rotation;
     Matrix4f m_perspectiveProjection;
     GLuint m_transformationLocation;
+    std::shared_ptr<ShaderProgramIF> m_shaderProgram;
 
 public:
     static PerspectiveProjectionDemo *Instance(void);
     void Init(void);
     void Render(void);
-
-private:
-    void compile_shaders(GLuint *shaderProgram, GLuint *vertexShaderObject, GLuint *fragmentShaderObject);
-    void add_shader(GLuint shaderProgram, GLuint *shaderObject, const char *pShaderText, GLenum shaderType);
 };
 
 #endif

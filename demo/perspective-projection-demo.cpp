@@ -11,6 +11,8 @@
 #include "file-utils.h"
 #include <time.h>
 #include <cmath>
+#include "shader-factory.h"
+#include "shader-program.h"
 
 using namespace std;
 
@@ -21,83 +23,6 @@ static float m_cameraDelta = 0.0;
 
 #define WINDOW_WIDTH 640
 #define WINDOW_HEIGHT 480
-
-void PerspectiveProjectionDemo::add_shader(GLuint shaderProgram, GLuint *shaderObject, const char *pShaderText, GLenum shaderType)
-{
-    *shaderObject = glCreateShader(shaderType);
-
-    if (*shaderObject == 0)
-    {
-        cerr << "Error creating shader type " << shaderType << endl;
-        exit(1);
-    }
-
-    const GLchar *p[1];
-    p[0] = pShaderText;
-
-    GLint lengths[1];
-    lengths[0] = (GLint)strlen(pShaderText);
-
-    glShaderSource(*shaderObject, 1, p, lengths);
-
-    glCompileShader(*shaderObject);
-
-    GLint success;
-    glGetShaderiv(*shaderObject, GL_COMPILE_STATUS, &success);
-
-    if (!success)
-    {
-        GLchar infoLog[1024];
-        glGetShaderInfoLog(*shaderObject, 1024, NULL, infoLog);
-        cerr << "Error compiling shader type " << shaderType << ": " << infoLog << endl;
-        exit(1);
-    }
-
-    glAttachShader(shaderProgram, *shaderObject);
-}
-
-void PerspectiveProjectionDemo::compile_shaders(GLuint *shaderProgram, GLuint *vertexShaderObject, GLuint *fragmentShaderObject)
-{
-    *shaderProgram = glCreateProgram();
-
-    if (*shaderProgram == 0)
-    {
-
-        cerr << "Error creating shader program" << endl;
-        exit(1);
-    }
-
-    string vs, fs;
-    read_file(vs, "./demo/perspective-projection-demo.vs");
-    read_file(fs, "./demo/perspective-projection-demo.fs");
-
-    add_shader(*shaderProgram, vertexShaderObject, vs.c_str(), GL_VERTEX_SHADER);
-    add_shader(*shaderProgram, fragmentShaderObject, fs.c_str(), GL_FRAGMENT_SHADER);
-
-    GLint success = 0;
-    GLchar errorLog[1024] = {0};
-
-    glLinkProgram(*shaderProgram);
-
-    glGetProgramiv(*shaderProgram, GL_LINK_STATUS, &success);
-    if (success == 0)
-    {
-        glGetProgramInfoLog(*shaderProgram, sizeof(errorLog), NULL, errorLog);
-        cerr << "Error linking shader program: " << errorLog << endl;
-        exit(1);
-    }
-
-    glValidateProgram(*shaderProgram);
-    glGetProgramiv(*shaderProgram, GL_VALIDATE_STATUS, &success);
-    if (!success)
-    {
-        glGetProgramInfoLog(*shaderProgram, sizeof(errorLog), NULL, errorLog);
-        cerr << "Invalid shader program: '" << errorLog << "'" << endl;
-        exit(1);
-    }
-
-    glUseProgram(*shaderProgram);
-}
 
 PerspectiveProjectionDemo *PerspectiveProjectionDemo::s_instance = NULL;
 
@@ -129,6 +54,9 @@ PerspectiveProjectionDemo *PerspectiveProjectionDemo::Instance(void)
 
 void PerspectiveProjectionDemo::Init(void)
 {
+    ShaderFactory::Instance()->LoadShaders("./demo/perspective-projection-demo-shaders.json");
+    m_shaderProgram = ShaderFactory::Instance()->GetShaderProgram("main");
+
     time_t t;
     srand((unsigned)time(&t));
 
@@ -174,9 +102,9 @@ void PerspectiveProjectionDemo::Init(void)
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_ibo);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(m_indexes), m_indexes, GL_STATIC_DRAW);
 
-    compile_shaders(&m_shaderProgram, &m_vertexShaderObject, &m_fragmentShaderObject);
+    m_shaderProgram->Enable();
 
-    m_transformationLocation = glGetUniformLocation(m_shaderProgram, "gTransformation");
+    m_transformationLocation = (GLuint)m_shaderProgram->GetUniformLocation("gTransformation");
 }
 
 void PerspectiveProjectionDemo::Render(void)
@@ -189,8 +117,8 @@ void PerspectiveProjectionDemo::Render(void)
         m_rotation = 0;
     }
 
-    m_cameraDelta += 0.04;
-    if (m_cameraDelta * 2 > 3.14159)
+    m_cameraDelta += 0.02;
+    if (m_cameraDelta > 1)
     {
         m_cameraDelta = 0;
     }
@@ -200,11 +128,22 @@ void PerspectiveProjectionDemo::Render(void)
 
     // these get mapped into the -1 to 1 range
     // the rasterizer then controls which z values are visible
-    float zfar = 2.5;
+    float zfar = 10.0;
     float znear = 1.0;
 
     float a = -1 - ((2 * zfar * znear) / (znear - zfar));
     float b = (2 * znear * zfar) / (znear - zfar);
+
+    Vector3f cameraPosition(0, 0, m_cameraDelta);
+    Vector3f U(1, 0, 0);
+    Vector3f V(0, 1, 0);
+    Vector3f N(0, 0, 1);
+
+    Matrix4f worldToCameraProjection(
+        U.x, U.y, U.z, -cameraPosition.x,
+        V.x, V.y, V.z, -cameraPosition.y,
+        N.x, N.y, N.z, -cameraPosition.z,
+        0, 0, 0, 1);
 
     m_perspectiveProjection = Matrix4f(1 / aspect_ratio * tanf((fov / 2.0f)), 0, 0, 0,
                                        0, 1 / tanf(fov / 2.0f), 0, 0,
@@ -216,11 +155,11 @@ void PerspectiveProjectionDemo::Render(void)
                          0, 0, 1, 3,
                          0, 0, 0, 1);
 
-    Matrix4f transformation = m_perspectiveProjection.multiply(
-        translation.multiply(Matrix4f(cosf(m_rotation), 0, -sinf(m_rotation), 0,
-                                      0, 1, 0, 0,
-                                      sinf(m_rotation), 0, cosf(m_rotation), 0,
-                                      0, 0, 0, 1)));
+    Matrix4f transformation = m_perspectiveProjection * worldToCameraProjection * translation *
+                              Matrix4f(cosf(m_rotation), 0, -sinf(m_rotation), 0,
+                                       0, 1, 0, 0,
+                                       sinf(m_rotation), 0, cosf(m_rotation), 0,
+                                       0, 0, 0, 1);
 
     glUniformMatrix4fv(m_transformationLocation, 1, GL_TRUE, &transformation.matrix[0][0]);
 

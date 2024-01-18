@@ -14,6 +14,9 @@ use the UCRT version of mingw for everything
 ## Install SDL2
 #### pacman -S mingw-w64-ucrt-x86_64-SDL2
 
+## Install json cpp
+#### pacman -S mingw-w64-ucrt-x86_64-jsoncpp
+
 ## To build:
 #### - cmake .
 #### - ninja -v
