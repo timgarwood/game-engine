@@ -17,9 +17,9 @@ static void graphics_init(void)
     GraphicsEngine::Instance()->Init();
 }
 
-static void graphics_next_frame(void)
+static FrameCallbackResult graphics_next_frame(void)
 {
-    GraphicsEngine::Instance()->NextFrame();
+    return GraphicsEngine::Instance()->NextFrame();
 }
 
 static void graphics_teardown(void)
@@ -29,7 +29,6 @@ static void graphics_teardown(void)
 
 GraphicsEngine::GraphicsEngine()
 {
-    s_instance = this;
     engine_register_module_init_callback(graphics_init);
     engine_register_frame_callback(graphics_next_frame);
     engine_register_module_teardown_callback(graphics_teardown);
@@ -45,7 +44,7 @@ GraphicsEngine *GraphicsEngine::Instance(void)
     return s_instance;
 }
 
-void GraphicsEngine::NextFrame(void)
+FrameCallbackResult GraphicsEngine::NextFrame(void)
 {
     if (s_window == NULL)
     {
@@ -61,6 +60,8 @@ void GraphicsEngine::NextFrame(void)
     }
 
     SDL_GL_SwapWindow(s_window);
+
+    return CONTINUE;
 }
 
 void GraphicsEngine::Init(void)

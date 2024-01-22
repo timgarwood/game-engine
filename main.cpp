@@ -3,6 +3,8 @@
 #include <GL/glu.h>
 #include "engine-api.h"
 #include "graphics-engine.h"
+#include "sdl-input-dispatcher.h"
+#include "camera-controller.h"
 
 #ifdef SINGLE_POINT_DEMO
 #include "single-point-demo.h"
@@ -39,7 +41,9 @@
 int main(int argc, char **argv)
 {
     Engine *e = Engine::Instance();
+    SDLInputDispatcher::Instance();
     GraphicsEngine *g = GraphicsEngine::Instance();
+    CameraController::Instance();
 #ifdef SINGLE_POINT_DEMO
     SinglePointDemo *spd = SinglePointDemo::Instance();
 #elif TRIANGLE_DEMO

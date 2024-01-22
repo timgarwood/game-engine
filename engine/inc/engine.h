@@ -3,8 +3,15 @@
 
 #include <list>
 
+enum FrameCallbackResult
+{
+    CONTINUE,
+    PAUSE,
+    EXIT
+};
+
 typedef void (*module_init_callback)(void);
-typedef void (*frame_callback)(void);
+typedef FrameCallbackResult (*frame_callback)(void);
 typedef void (*module_teardown_callback)(void);
 
 class Engine

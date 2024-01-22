@@ -2,6 +2,7 @@
 #define _GRAPHICS_ENGINE_H
 
 #include <list>
+#include "engine.h"
 
 typedef void (*render_callback)(void);
 
@@ -17,7 +18,7 @@ public:
     static GraphicsEngine *Instance(void);
     void Init(void);
     void RegisterRenderCallback(render_callback callback);
-    void NextFrame(void);
+    FrameCallbackResult NextFrame(void);
     void UnregisterRenderCallback(render_callback callback);
     void TearDown(void);
 };

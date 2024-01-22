@@ -53,12 +53,23 @@ set(ENGINE_SOURCES
     engine/src/engine.cpp
 )
 
+set(MATH_SOURCES math/matrix.cpp
+    math/vector.cpp
+    math/quaternion.cpp)
+
 SET(FILE_SOURCES
     file/file-utils.cpp
 )
 
 set(GRAPHICS_SOURCES 
     graphics/src/graphics-engine-sdl.cpp)
+
+set(INPUT_SOURCES
+    input/sdl-input-dispatcher.cpp)
+
+set(CAMERA_SOURCES
+    camera/camera.cpp
+    camera/camera-controller.cpp)
 
 set(SHADER_SOURCES 
     shaders/shader-parser.cpp
@@ -72,12 +83,14 @@ set(ENGINE_INCLUDES
     file
     math
     demo
+    camera
     engine/api
     engine/inc
     graphics/inc
+    input
     shaders)
 
-add_executable(engine main.cpp ${ENGINE_SOURCES} ${GRAPHICS_SOURCES} ${DEMO_SOURCES} ${FILE_SOURCES} ${SHADER_SOURCES})
+add_executable(engine main.cpp ${ENGINE_SOURCES} ${MATH_SOURCES} ${GRAPHICS_SOURCES} ${INPUT_SOURCES} ${CAMERA_SOURCES} ${DEMO_SOURCES} ${FILE_SOURCES} ${SHADER_SOURCES})
 
 target_link_libraries(engine ${ENGINE_LIBS})
 

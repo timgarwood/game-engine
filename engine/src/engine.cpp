@@ -1,7 +1,6 @@
 #include "engine-api.h"
 #include "engine.h"
 #include <stddef.h>
-#include "SDL2/SDL_Events.h"
 
 using namespace std;
 
@@ -80,20 +79,14 @@ void Engine::MainLoop(void)
     m_active = true;
     while (m_active)
     {
-        SDL_Event event;
-        while (SDL_PollEvent(&event))
-        {
-            if (event.type == SDL_MOUSEBUTTONDOWN)
-            {
-                EndMainLoop();
-            }
-        }
-
         list<frame_callback>::iterator iter = m_frame_callbacks.begin();
         for (; iter != m_frame_callbacks.end(); ++iter)
         {
-
-            (*iter)();
+            auto frameResult = (*iter)();
+            if (frameResult == EXIT)
+            {
+                EndMainLoop();
+            }
         }
     }
 }

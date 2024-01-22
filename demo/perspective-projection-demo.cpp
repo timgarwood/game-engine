@@ -13,6 +13,7 @@
 #include <cmath>
 #include "shader-factory.h"
 #include "shader-program.h"
+#include "camera.h"
 
 using namespace std;
 
@@ -155,7 +156,7 @@ void PerspectiveProjectionDemo::Render(void)
                          0, 0, 1, 3,
                          0, 0, 0, 1);
 
-    Matrix4f transformation = m_perspectiveProjection * worldToCameraProjection * translation *
+    Matrix4f transformation = m_perspectiveProjection * Camera::Instance()->GetMatrix() * translation *
                               Matrix4f(cosf(m_rotation), 0, -sinf(m_rotation), 0,
                                        0, 1, 0, 0,
                                        sinf(m_rotation), 0, cosf(m_rotation), 0,
