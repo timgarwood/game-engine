@@ -6,6 +6,8 @@ using namespace std;
 
 CameraController *CameraController::s_instance = NULL;
 
+static float s_mouseSensitivity = 2.0;
+
 static void camera_controller_mouse_move_callback(int x, int y)
 {
     CameraController::Instance()->MouseMoveCallback(x, y);
@@ -33,8 +35,8 @@ void CameraController::MouseMoveCallback(int x, int y)
     float xdiff = x - m_lastMouseX;
     float ydiff = y - m_lastMouseY;
 
-    float xangle = xdiff / 20.0;
-    float yangle = ydiff / 50.0;
+    float xangle = (xdiff * s_mouseSensitivity) / 20.0;
+    float yangle = (ydiff * s_mouseSensitivity) / 40.0;
 
     Camera::Instance()->RotateX(xangle);
     Camera::Instance()->RotateY(yangle);
