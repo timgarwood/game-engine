@@ -31,6 +31,10 @@ public:
     static PerspectiveProjectionDemo *Instance(void);
     void Init(void);
     void Render(void);
+    void WindowResized(int windowWidth, int windowHeight);
+
+    int m_windowWidth;
+    int m_windowHeight;
 };
 
 #endif

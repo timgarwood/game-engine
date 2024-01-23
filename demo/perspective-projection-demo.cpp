@@ -14,6 +14,7 @@
 #include "shader-factory.h"
 #include "shader-program.h"
 #include "camera.h"
+#include "sdl-event-dispatcher.h"
 
 using namespace std;
 
@@ -39,6 +40,9 @@ static void render(void)
 
 PerspectiveProjectionDemo::PerspectiveProjectionDemo()
 {
+    m_windowWidth = 640;
+    m_windowHeight = 480;
+
     Engine::Instance()->RegisterModuleInitCallback(init);
     GraphicsEngine::Instance()->RegisterRenderCallback(render);
 }
@@ -53,8 +57,14 @@ PerspectiveProjectionDemo *PerspectiveProjectionDemo::Instance(void)
     return s_instance;
 }
 
+static void perspective_projection_window_resized(int windowWidth, int windowHeight)
+{
+    PerspectiveProjectionDemo::Instance()->WindowResized(windowWidth, windowHeight);
+}
+
 void PerspectiveProjectionDemo::Init(void)
 {
+    SDLEventDispatcher::Instance()->RegisterForWindowResized(perspective_projection_window_resized);
     ShaderFactory::Instance()->LoadShaders("./demo/perspective-projection-demo-shaders.json");
     m_shaderProgram = ShaderFactory::Instance()->GetShaderProgram("main");
 
@@ -63,11 +73,6 @@ void PerspectiveProjectionDemo::Init(void)
 
     m_delta = 0.04f;
     m_rotation = 0.0f;
-
-    m_perspectiveProjection = Matrix4f(1, 0, 0, 0,
-                                       0, 1, 0, 0,
-                                       0, 0, 1, 0,
-                                       0, 0, 0, 1);
 
     m_vertices[0] = Vertex3f(Vector3f(0.5f, 0.5f, 0.5f), RAND_COLOR);
     m_vertices[1] = Vertex3f(Vector3f(-0.5f, 0.5f, -0.5f), RAND_COLOR);
@@ -124,8 +129,8 @@ void PerspectiveProjectionDemo::Render(void)
         m_cameraDelta = 0;
     }
 
-    float fov = 90.0f * 3.14159 / 180.0f;
-    float aspect_ratio = (float)WINDOW_WIDTH / (float)WINDOW_HEIGHT;
+    float fov = 65.0f * 3.14159 / 180.0f;
+    float aspect_ratio = (float)m_windowHeight / (float)m_windowWidth;
 
     // these get mapped into the -1 to 1 range
     // the rasterizer then controls which z values are visible
@@ -146,14 +151,14 @@ void PerspectiveProjectionDemo::Render(void)
         N.x, N.y, N.z, -cameraPosition.z,
         0, 0, 0, 1);
 
-    m_perspectiveProjection = Matrix4f(1 / aspect_ratio * tanf((fov / 2.0f)), 0, 0, 0,
-                                       0, 1 / tanf(fov / 2.0f), 0, 0,
+    m_perspectiveProjection = Matrix4f(1.0f / tanf(fov / 2.0f), 0, 0, 0,
+                                       0, 1 / (tanf(fov / 2.0f) * aspect_ratio), 0, 0,
                                        0, 0, a, b,
                                        0, 0, 1, 0);
 
     Matrix4f translation(1, 0, 0, 0,
                          0, 1, 0, 0,
-                         0, 0, 1, 3,
+                         0, 0, 1, 5,
                          0, 0, 0, 1);
 
     Matrix4f transformation = m_perspectiveProjection * Camera::Instance()->GetMatrix() * translation *
@@ -176,4 +181,10 @@ void PerspectiveProjectionDemo::Render(void)
 
     glDisableVertexAttribArray(0);
     glDisableVertexAttribArray(1);
+}
+
+void PerspectiveProjectionDemo::WindowResized(int windowWidth, int windowHeight)
+{
+    m_windowWidth = windowWidth;
+    m_windowHeight = windowHeight;
 }

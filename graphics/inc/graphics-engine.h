@@ -21,6 +21,7 @@ public:
     FrameCallbackResult NextFrame(void);
     void UnregisterRenderCallback(render_callback callback);
     void TearDown(void);
+    void Resize(int width, int height);
 };
 
 #endif

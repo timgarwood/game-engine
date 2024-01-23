@@ -1,5 +1,6 @@
 #include "graphics-engine.h"
 #include "engine-api.h"
+#include "sdl-event-dispatcher.h"
 #include <GL/glew.h>
 #include "SDL2/SDL.h"
 #include <stddef.h>
@@ -27,11 +28,17 @@ static void graphics_teardown(void)
     GraphicsEngine::Instance()->TearDown();
 }
 
+static void graphics_engine_window_resize(int width, int height)
+{
+    GraphicsEngine::Instance()->Resize(width, height);
+}
+
 GraphicsEngine::GraphicsEngine()
 {
     engine_register_module_init_callback(graphics_init);
     engine_register_frame_callback(graphics_next_frame);
     engine_register_module_teardown_callback(graphics_teardown);
+    SDLEventDispatcher::Instance()->RegisterForWindowResized(graphics_engine_window_resize);
 }
 
 GraphicsEngine *GraphicsEngine::Instance(void)
@@ -87,6 +94,11 @@ void GraphicsEngine::Init(void)
         cerr << "Error: " << glewGetErrorString(res);
         return;
     }
+}
+
+void GraphicsEngine::Resize(int width, int height)
+{
+    glViewport(0, 0, (GLsizei)width, (GLsizei)height);
 }
 
 void GraphicsEngine::TearDown(void)

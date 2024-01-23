@@ -65,7 +65,7 @@ set(GRAPHICS_SOURCES
     graphics/src/graphics-engine-sdl.cpp)
 
 set(INPUT_SOURCES
-    input/sdl-input-dispatcher.cpp)
+    input/sdl-event-dispatcher.cpp)
 
 set(CAMERA_SOURCES
     camera/camera.cpp
@@ -81,6 +81,7 @@ set(ENGINE_LIBS
 
 set(ENGINE_INCLUDES
     file
+    window
     math
     demo
     camera

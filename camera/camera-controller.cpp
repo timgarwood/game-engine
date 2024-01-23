@@ -1,5 +1,5 @@
 #include "camera-controller.h"
-#include "sdl-input-dispatcher.h"
+#include "sdl-event-dispatcher.h"
 #include "camera.h"
 
 using namespace std;
@@ -25,7 +25,7 @@ CameraController *CameraController::Instance()
 
 CameraController::CameraController(int windowWidth, int windowHeight)
 {
-    SDLInputDispatcher::Instance()->RegisterMouseMoveCallback(camera_controller_mouse_move_callback);
+    SDLEventDispatcher::Instance()->RegisterMouseMoveCallback(camera_controller_mouse_move_callback);
     m_lastMouseX = windowWidth / 2;
     m_lastMouseY = windowHeight / 2;
 }
