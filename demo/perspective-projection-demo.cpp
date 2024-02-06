@@ -15,8 +15,11 @@
 #include "shader-program.h"
 #include "camera.h"
 #include "sdl-event-dispatcher.h"
+#include "cube.h"
 
 using namespace std;
+
+vector<Quad3d> s_cubes;
 
 float max_color = 255.0f;
 #define RAND_COLOR Vector3f((float)(rand() % 255) / max_color, (float)(rand() % 255) / max_color, (float)(rand() % 255) / max_color)
@@ -64,6 +67,16 @@ static void perspective_projection_window_resized(int windowWidth, int windowHei
 
 void PerspectiveProjectionDemo::Init(void)
 {
+    s_cubes = vector<Quad3d>();
+    s_cubes.push_back(Cube(Vector3f(0, 1, 0), 1, RAND_COLOR));
+    s_cubes.push_back(Cube(Vector3f(5, 1, 1), 1, RAND_COLOR));
+    s_cubes.push_back(Cube(Vector3f(-5, 1, 1), 1, RAND_COLOR));
+    s_cubes.push_back(Cube(Vector3f(0, 1, 5), 1, RAND_COLOR));
+    s_cubes.push_back(Cube(Vector3f(5, 1, 5), 1, RAND_COLOR));
+    s_cubes.push_back(Cube(Vector3f(-5, 1, 5), 1, RAND_COLOR));
+
+    //floor
+    s_cubes.push_back(Quad3d(Vector3f(0, 0, 0), 10, .2, 10, RAND_COLOR));
     SDLEventDispatcher::Instance()->RegisterForWindowResized(perspective_projection_window_resized);
     ShaderFactory::Instance()->LoadShaders("./demo/perspective-projection-demo-shaders.json");
     m_shaderProgram = ShaderFactory::Instance()->GetShaderProgram("main");
@@ -74,27 +87,24 @@ void PerspectiveProjectionDemo::Init(void)
     m_delta = 0.04f;
     m_rotation = 0.0f;
 
-    m_vertices[0] = Vertex3f(Vector3f(0.5f, 0.5f, 0.5f), RAND_COLOR);
-    m_vertices[1] = Vertex3f(Vector3f(-0.5f, 0.5f, -0.5f), RAND_COLOR);
-    m_vertices[2] = Vertex3f(Vector3f(-0.5f, 0.5f, 0.5f), RAND_COLOR);
-    m_vertices[3] = Vertex3f(Vector3f(0.5f, -0.5f, -0.5f), RAND_COLOR);
-    m_vertices[4] = Vertex3f(Vector3f(-0.5f, -0.5f, -0.5f), RAND_COLOR);
-    m_vertices[5] = Vertex3f(Vector3f(0.5f, 0.5f, -0.5f), RAND_COLOR);
-    m_vertices[6] = Vertex3f(Vector3f(0.5f, -0.5f, 0.5f), RAND_COLOR);
-    m_vertices[7] = Vertex3f(Vector3f(-0.5f, -0.5f, 0.5f), RAND_COLOR);
+    auto cubeIter = s_cubes.begin();
+    int vertexOffset = 0;
+    for (; cubeIter != s_cubes.end(); ++cubeIter)
+    {
+        vector<Vertex3f> v = cubeIter->GetVertices();
+        m_vertices.insert(m_vertices.end(), v.begin(), v.end());
 
-    m_indexes[0] = Vector3i(0, 1, 2);
-    m_indexes[1] = Vector3i(1, 3, 4);
-    m_indexes[2] = Vector3i(5, 6, 3);
-    m_indexes[3] = Vector3i(7, 3, 6);
-    m_indexes[4] = Vector3i(2, 4, 7);
-    m_indexes[5] = Vector3i(0, 7, 6);
-    m_indexes[6] = Vector3i(0, 5, 1);
-    m_indexes[7] = Vector3i(1, 5, 3);
-    m_indexes[8] = Vector3i(5, 0, 6);
-    m_indexes[9] = Vector3i(7, 4, 3);
-    m_indexes[10] = Vector3i(2, 1, 4);
-    m_indexes[11] = Vector3i(0, 2, 7);
+        vector<int> i = cubeIter->GetIndices();
+
+        auto indexIter = i.begin();
+        for (; indexIter != i.end(); ++indexIter)
+        {
+            (*indexIter) += vertexOffset;
+            m_indices.push_back(*indexIter);
+        }
+
+        vertexOffset += v.size();
+    }
 
     glEnable(GL_CULL_FACE);
     glFrontFace(GL_CW);
@@ -102,11 +112,11 @@ void PerspectiveProjectionDemo::Init(void)
 
     glGenBuffers(1, &m_vbo);
     glBindBuffer(GL_ARRAY_BUFFER, m_vbo);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(m_vertices), m_vertices, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, m_vertices.size() * sizeof(Vertex3f), &m_vertices[0], GL_STATIC_DRAW);
 
     glGenBuffers(1, &m_ibo);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_ibo);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(m_indexes), m_indexes, GL_STATIC_DRAW);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, m_indices.size() * sizeof(int), &m_indices[0], GL_STATIC_DRAW);
 
     m_shaderProgram->Enable();
 
@@ -134,7 +144,7 @@ void PerspectiveProjectionDemo::Render(void)
 
     // these get mapped into the -1 to 1 range
     // the rasterizer then controls which z values are visible
-    float zfar = 10.0;
+    float zfar = 100.0;
     float znear = 1.0;
 
     float a = -1 - ((2 * zfar * znear) / (znear - zfar));
@@ -161,11 +171,11 @@ void PerspectiveProjectionDemo::Render(void)
                          0, 0, 1, 5,
                          0, 0, 0, 1);
 
-    Matrix4f transformation = m_perspectiveProjection * Camera::Instance()->GetMatrix() * translation *
-                              Matrix4f(cosf(m_rotation), 0, -sinf(m_rotation), 0,
-                                       0, 1, 0, 0,
-                                       sinf(m_rotation), 0, cosf(m_rotation), 0,
-                                       0, 0, 0, 1);
+    Matrix4f transformation = m_perspectiveProjection * Camera::Instance()->GetMatrix() * translation; // *
+                                                                                                       // Matrix4f(cosf(m_rotation), 0, -sinf(m_rotation), 0,
+                                                                                                       //        0, 1, 0, 0,
+                                                                                                       //        sinf(m_rotation), 0, cosf(m_rotation), 0,
+                                                                                                       //         0, 0, 0, 1);
 
     glUniformMatrix4fv(m_transformationLocation, 1, GL_TRUE, &transformation.matrix[0][0]);
 
@@ -177,7 +187,7 @@ void PerspectiveProjectionDemo::Render(void)
 
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_ibo);
 
-    glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
+    glDrawElements(GL_TRIANGLES, 12 * 3 * s_cubes.size(), GL_UNSIGNED_INT, 0);
 
     glDisableVertexAttribArray(0);
     glDisableVertexAttribArray(1);

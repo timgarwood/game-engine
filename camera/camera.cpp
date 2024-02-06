@@ -1,4 +1,5 @@
 #include "camera.h"
+#include "vector.h"
 
 CameraIF *Camera::s_instance = NULL;
 
@@ -30,24 +31,43 @@ void Camera::RotateY(float degrees)
     m_angleY += degrees;
 }
 
-void Camera::TranslateX(float inc)
+void Camera::MoveForward(float mult)
 {
-    m_position.x += inc;
+    m_position = m_position + (m_lookAt * mult);
 }
 
-void Camera::TranslateY(float inc)
+void Camera::MoveBackward(float mult)
 {
-    m_position.y += inc;
+    m_position = m_position - (m_lookAt * mult);
 }
 
-void Camera::TranslateZ(float inc)
+void Camera::MoveRight(float mult)
 {
-    m_position.z += inc;
+    Vector3f moveAlong = m_lookAt;
+    moveAlong.Rotate(270, m_up);
+    moveAlong.Normalize();
+
+    m_position = m_position - (moveAlong * mult);
+}
+
+void Camera::MoveLeft(float mult)
+{
+    Vector3f moveAlong = m_lookAt;
+    moveAlong.Rotate(270, m_up);
+    moveAlong.Normalize();
+
+    m_position = m_position + (moveAlong * mult);
 }
 
 void Camera::SetPosition(Vector3f position)
 {
     m_position = position;
+}
+
+void Camera::SetLookAt(Vector3f target)
+{
+    m_lookAt = target;
+    m_lookAt.Normalize();
 }
 
 Vector3f Camera::GetPosition()
@@ -71,6 +91,8 @@ Matrix4f Camera::GetMatrix()
 
     View.Normalize();
 
+    m_lookAt = View;
+
     m_up = View.Cross(U);
     m_up.Normalize();
 
@@ -78,10 +100,4 @@ Matrix4f Camera::GetMatrix()
     cameraTransformation.InitCameraTransform(m_position, View, m_up);
 
     return cameraTransformation;
-
-    /*   return Matrix4f(1, 0, 0, 0,
-                       0, 1, 0, 0,
-                       0, 0, 1, 0,
-                       0, 0, 0, 1);
-                       */
 }

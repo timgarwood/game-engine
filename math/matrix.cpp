@@ -32,6 +32,29 @@ Matrix4f::Matrix4f(float a0, float a1, float a2, float a3,
     matrix[3][3] = a15;
 }
 
+Matrix4f::Matrix4f(float *a)
+{
+    matrix[0][0] = a[0];
+    matrix[0][1] = a[1];
+    matrix[0][2] = a[2];
+    matrix[0][3] = a[3];
+
+    matrix[1][0] = a[4];
+    matrix[1][1] = a[5];
+    matrix[1][2] = a[6];
+    matrix[1][3] = a[7];
+
+    matrix[2][0] = a[8];
+    matrix[2][1] = a[9];
+    matrix[2][2] = a[10];
+    matrix[2][3] = a[11];
+
+    matrix[3][0] = a[12];
+    matrix[3][1] = a[13];
+    matrix[3][2] = a[14];
+    matrix[3][3] = a[15];
+}
+
 Matrix4f Matrix4f::operator*(const Matrix4f &other)
 {
     return Matrix4f(
@@ -117,4 +140,13 @@ void Matrix4f::InitCameraTransform(const Vector3f &Target, const Vector3f &Up)
     matrix[3][1] = 0.0f;
     matrix[3][2] = 0.0f;
     matrix[3][3] = 1.0f;
+}
+
+void Matrix4f::SetIdentity()
+{
+    memset(matrix, 0, sizeof(matrix));
+    matrix[0][0] = 1;
+    matrix[1][1] = 1;
+    matrix[2][2] = 1;
+    matrix[3][3] = 1;
 }

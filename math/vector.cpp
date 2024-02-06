@@ -51,6 +51,21 @@ void Vector3f::Rotate(float Angle, const Vector3f &V)
     z = W.z;
 }
 
+Vector3f Vector3f::operator*(const float &f)
+{
+    return Vector3f(this->x * f, this->y * f, this->z * f);
+}
+
+Vector3f Vector3f::operator+(const Vector3f &other)
+{
+    return Vector3f(this->x + other.x, this->y + other.y, this->z + other.z);
+}
+
+Vector3f Vector3f::operator-(const Vector3f &other)
+{
+    return Vector3f(this->x - other.x, this->y - other.y, this->z - other.z);
+}
+
 Vector3i::Vector3i()
 {
     x = 0;

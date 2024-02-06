@@ -56,6 +56,34 @@ void SDLEventDispatcher::UnregisterForWindowResized(window_resized_callback call
     }
 }
 
+void SDLEventDispatcher::RegisterForKeyDown(key_down_callback callback)
+{
+    m_keyDownCallbacks.push_back(callback);
+}
+
+void SDLEventDispatcher::UnregisterForKeyDown(key_down_callback callback)
+{
+    auto iter = find(m_keyDownCallbacks.begin(), m_keyDownCallbacks.end(), callback);
+    if (iter != m_keyDownCallbacks.end())
+    {
+        m_keyDownCallbacks.erase(iter);
+    }
+}
+
+void SDLEventDispatcher::RegisterForKeyUp(key_up_callback callback)
+{
+    m_keyUpCallbacks.push_back(callback);
+}
+
+void SDLEventDispatcher::UnregisterForKeyUp(key_up_callback callback)
+{
+    auto iter = find(m_keyUpCallbacks.begin(), m_keyUpCallbacks.end(), callback);
+    if (iter != m_keyUpCallbacks.end())
+    {
+        m_keyUpCallbacks.erase(iter);
+    }
+}
+
 FrameCallbackResult SDLEventDispatcher::FrameCallback()
 {
     SDL_Event event;
@@ -88,7 +116,58 @@ FrameCallbackResult SDLEventDispatcher::FrameCallback()
                 }
             }
         }
+        else if (event.type == SDL_KEYDOWN || event.type == SDL_KEYUP)
+        {
+            char key;
+            if (event.key.keysym.sym == SDLK_w)
+            {
+                key = 'w';
+            }
+            else if (event.key.keysym.sym == SDLK_s)
+            {
+                key = 's';
+            }
+            else if (event.key.keysym.sym == SDLK_a)
+            {
+                key = 'a';
+            }
+            else if (event.key.keysym.sym == SDLK_d)
+            {
+                key = 'd';
+            }
+            else
+            {
+                continue;
+            }
+
+            if (event.type == SDL_KEYDOWN)
+            {
+                SendKeyDown(key);
+            }
+            else
+            {
+                SendKeyUp(key);
+            }
+        }
     }
 
     return CONTINUE;
+}
+
+void SDLEventDispatcher::SendKeyDown(char key)
+{
+    auto iter = m_keyDownCallbacks.begin();
+    for (; iter != m_keyDownCallbacks.end(); ++iter)
+    {
+        (*iter)(key);
+    }
+}
+
+void SDLEventDispatcher::SendKeyUp(char key)
+{
+    auto iter = m_keyUpCallbacks.begin();
+    for (; iter != m_keyUpCallbacks.end(); ++iter)
+    {
+        (*iter)(key);
+    }
 }

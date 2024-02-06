@@ -6,6 +6,7 @@
 #include <gl/gl.h>
 #include <gl/glu.h>
 #include <memory>
+#include <vector>
 
 class ShaderProgramIF;
 
@@ -15,8 +16,8 @@ private:
     static PerspectiveProjectionDemo *s_instance;
     PerspectiveProjectionDemo();
 
-    Vertex3f m_vertices[8];
-    Vector3i m_indexes[12];
+    std::vector<Vertex3f> m_vertices;
+    std::vector<int> m_indices;
     GLuint m_vbo;
     GLuint m_ibo;
     GLuint m_vertexShaderObject;

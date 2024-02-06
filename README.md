@@ -17,6 +17,12 @@ use the UCRT version of mingw for everything
 ## Install json cpp
 #### pacman -S mingw-w64-ucrt-x86_64-jsoncpp
 
+## Install stb
+#### pacman -S mingw-w64-ucrt-x86_64-stb
+
+## Install bullet (physics)
+#### pacman -S mingw-w64-ucrt-x86_64-bullet
+
 ## To build:
 #### - cmake .
 #### - ninja -v
