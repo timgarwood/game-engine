@@ -39,6 +39,7 @@ void DebugSceneFactory::LoadScene(const string &filename)
         btCollisionShape *collisionShape = new btBoxShape(btVector3(iter->width / 2, iter->height / 2, iter->depth / 2));
         auto q3d = new Quad3d(collisionShape, iter->position, iter->width, iter->height, iter->depth, iter->color);
         q3d->SetMass(iter->mass);
+        q3d->SetStartRotation(iter->rotation.x, iter->rotation.y, iter->rotation.z);
         q3d->BuildRigidBody();
         if (iter->mass != 0.f)
         {

@@ -24,6 +24,8 @@ public:
 
     virtual void SetStartPosition(Vector3f startTransform) = 0;
 
+    virtual void SetStartRotation(float xAngle, float yAngle, float zAngle) = 0;
+
     virtual const Matrix4f &GetStartOffset() = 0;
 
     virtual void BuildRigidBody() = 0;

@@ -8,8 +8,7 @@ struct GameObjectDebugData
 {
     Vector3f position;
 
-    // rotation matrix
-    Matrix4f rotation;
+    Vector3f rotation;
 
     // each debug game object is a Quad3d
     float width;

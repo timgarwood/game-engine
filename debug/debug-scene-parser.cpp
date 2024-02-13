@@ -43,12 +43,7 @@ DebugSceneData DebugSceneParser::LoadDebugSceneData(const std::string &filename)
         godd.height = gameObjectDimNode["height"].asFloat();
         godd.depth = gameObjectDimNode["depth"].asFloat();
 
-        godd.rotation.SetIdentity();
-        godd.rotation.matrix[0][0] = cosf(gameObjectRotNode["z"].asFloat());
-        godd.rotation.matrix[0][1] = -sinf(gameObjectRotNode["z"].asFloat());
-        godd.rotation.matrix[1][0] = sinf(gameObjectRotNode["z"].asFloat());
-        godd.rotation.matrix[1][1] = cosf(gameObjectRotNode["z"].asFloat());
-
+        godd.rotation = Vector3f(gameObjectRotNode["x"].asFloat(), gameObjectRotNode["y"].asFloat(), gameObjectRotNode["z"].asFloat());
         godd.position = Vector3f(gameObjectPosNode["x"].asFloat(), gameObjectPosNode["y"].asFloat(), gameObjectPosNode["z"].asFloat());
 
         godd.color = Vector3f(gameObjectColorNode["r"].asFloat(), gameObjectColorNode["g"].asFloat(), gameObjectColorNode["b"].asFloat());

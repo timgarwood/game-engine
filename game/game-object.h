@@ -25,6 +25,8 @@ public:
 
     virtual void SetStartPosition(Vector3f startTransform);
 
+    virtual void SetStartRotation(float angleX, float angleY, float angleZ);
+
     virtual const Matrix4f &GetStartOffset();
 
     virtual void BuildRigidBody();
@@ -43,6 +45,7 @@ protected:
 
     float m_mass;
     Vector3f m_startPosition;
+    Vector3f m_startRotation;
     Matrix4f m_startOffset;
     btCollisionShape *m_collisionShape;
     btRigidBody *m_rigidBody;
