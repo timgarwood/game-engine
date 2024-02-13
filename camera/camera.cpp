@@ -66,8 +66,8 @@ void Camera::SetPosition(Vector3f position)
 
 void Camera::SetLookAt(Vector3f target)
 {
-    m_lookAt = target;
-    m_lookAt.Normalize();
+    m_angleX = target.x;
+    m_angleY = target.y;
 }
 
 Vector3f Camera::GetPosition()

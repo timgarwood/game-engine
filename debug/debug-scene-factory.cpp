@@ -30,8 +30,8 @@ void DebugSceneFactory::LoadScene(const string &filename)
     DebugSceneParser parser;
     DebugSceneData debugSceneData = parser.LoadDebugSceneData(filename);
 
-    //Camera::Instance()->SetPosition(debugSceneData.cameraPosition);
-    //Camera::Instance()->SetLookAt(debugSceneData.cameraLookAt);
+    Camera::Instance()->SetPosition(debugSceneData.cameraPosition);
+    Camera::Instance()->SetLookAt(debugSceneData.cameraLookAt);
 
     auto iter = debugSceneData.gameObjectDebugData.begin();
     for (; iter != debugSceneData.gameObjectDebugData.end(); ++iter)
