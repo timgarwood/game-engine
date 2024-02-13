@@ -128,12 +128,15 @@ set(ENGINE_INCLUDES
     shaders
     game
     physics
+    debug
     )
 
 # TODO fixme
 # not sure why I need to do this???
 set(BULLET_INCLUDES
-    D:/msys64/ucrt64/include/bullet)
+    D:/msys64/ucrt64/include/bullet
+    D:/msys64/ucrt64/include/bullet/LinearMath
+    D:/msys64/ucrt64/include/bullet/src/LinearMath)
 
 add_executable(engine ${ENGINE_SOURCES} ${DEBUG_SOURCES} ${PHYSICS_SOURCES} ${MATH_SOURCES} ${GRAPHICS_SOURCES} ${INPUT_SOURCES} ${CAMERA_SOURCES} ${DEMO_SOURCES} ${FILE_SOURCES} ${SHADER_SOURCES} ${GAME_SOURCES})
 

@@ -17,13 +17,15 @@ public:
     // get the vertex buffer indices to render
     virtual const std::vector<int> &GetIndices();
 
-    virtual const Matrix4f &GetRotation();
+    virtual Matrix4f GetRotation();
 
-    virtual const Matrix4f &GetTranslation();
+    virtual Vector3f GetPosition();
 
     virtual void SetMass(float mass);
 
     virtual void SetStartPosition(Vector3f startTransform);
+
+    virtual const Matrix4f &GetStartOffset();
 
     virtual void BuildRigidBody();
 
@@ -31,18 +33,20 @@ public:
 
     virtual bool IsCollidable();
 
-    virtual Matrix4f GetPhysicsTransform();
+    virtual void SetColor(Vector3f color);
+
+    virtual Vector3f GetColor();
 
 protected:
     std::vector<Vector3f> m_vertices;
     std::vector<int> m_indices;
 
-    Matrix4f m_rotation;
-    Matrix4f m_translation;
     float m_mass;
     Vector3f m_startPosition;
+    Matrix4f m_startOffset;
     btCollisionShape *m_collisionShape;
     btRigidBody *m_rigidBody;
+    Vector3f m_color;
 };
 
 #endif

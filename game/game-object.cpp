@@ -1,6 +1,7 @@
 #include "game-object.h"
 #include <cassert>
 #include "btBulletDynamicsCommon.h"
+#include <cmath>
 
 using namespace std;
 
@@ -8,6 +9,7 @@ GameObject::GameObject(btCollisionShape *collisionShape)
 {
     m_collisionShape = collisionShape;
     m_rigidBody = NULL;
+    m_color = Vector3f(1, 1, 1);
 }
 
 const vector<Vector3f> &GameObject::GetVertices()
@@ -20,16 +22,6 @@ const vector<int> &GameObject::GetIndices()
     return m_indices;
 }
 
-const Matrix4f &GameObject::GetRotation()
-{
-    return m_rotation;
-}
-
-const Matrix4f &GameObject::GetTranslation()
-{
-    return m_translation;
-}
-
 void GameObject::SetMass(float mass)
 {
     m_mass = mass;
@@ -37,7 +29,39 @@ void GameObject::SetMass(float mass)
 
 void GameObject::SetStartPosition(Vector3f startPosition)
 {
+    m_startOffset.SetIdentity();
+    m_startOffset.matrix[0][3] = -startPosition.x;
+    m_startOffset.matrix[1][3] = -startPosition.y;
+    m_startOffset.matrix[2][3] = -startPosition.z;
     m_startPosition = startPosition;
+}
+
+const Matrix4f &GameObject::GetStartOffset()
+{
+    return m_startOffset;
+}
+
+Vector3f GameObject::GetPosition()
+{
+    btTransform bulletTransform;
+    m_rigidBody->getMotionState()->getWorldTransform(bulletTransform);
+
+    return Vector3f(bulletTransform.getOrigin()[0],
+                    bulletTransform.getOrigin()[1],
+                    bulletTransform.getOrigin()[2]);
+}
+
+Matrix4f GameObject::GetRotation()
+{
+    btTransform bulletTransform;
+    m_rigidBody->getMotionState()->getWorldTransform(bulletTransform);
+
+    Matrix4f ret;
+    auto basis = bulletTransform.getBasis();
+
+    ret.Set(&basis);
+
+    return ret;
 }
 
 void GameObject::BuildRigidBody()
@@ -72,55 +96,12 @@ bool GameObject::IsCollidable()
     return m_collisionShape != NULL && m_rigidBody != NULL;
 }
 
-Matrix4f GameObject::GetPhysicsTransform()
+Vector3f GameObject::GetColor()
 {
-    Matrix4f ret;
-    ret.SetIdentity();
-    btTransform bulletTransform;
-    //if (m_mass != 0.f)
-    // {
-    m_rigidBody->getMotionState()->getWorldTransform(bulletTransform);
-    // }
-    // else
-    // {
-    //     bulletTransform = m_rigidBody->getWorldTransform();
-    // }
+    return m_color;
+}
 
-    btVector3 translation = bulletTransform.getOrigin();
-    btMatrix3x3 rotation = bulletTransform.getBasis();
-    ret.matrix[0][3] = translation[0] - m_startPosition.x;
-    ret.matrix[1][3] = translation[1] - m_startPosition.y;
-    ret.matrix[2][3] = translation[2] - m_startPosition.z;
-
-    ret.matrix[0][0] = rotation[0][0];
-    ret.matrix[0][1] = rotation[0][1];
-    ret.matrix[0][2] = rotation[0][2];
-
-    ret.matrix[1][0] = rotation[1][0];
-    ret.matrix[1][1] = rotation[1][1];
-    ret.matrix[1][2] = rotation[1][2];
-
-    ret.matrix[2][0] = rotation[2][0];
-    ret.matrix[2][1] = rotation[2][1];
-    ret.matrix[2][2] = rotation[2][2];
-
-    float ogl[16];
-    bulletTransform.getOpenGLMatrix(ogl);
-
-    ogl[3] = ogl[12];
-    ogl[7] = ogl[13];
-    ogl[11] = ogl[14];
-
-    ogl[12] = 0;
-    ogl[13] = 0;
-    ogl[14] = 0;
-    ogl[15] = 1;
-
-    ogl[3] -= m_startPosition.x;
-    ogl[7] -= m_startPosition.y;
-    ogl[11] -= m_startPosition.z;
-
-    return Matrix4f(ogl);
-
-    //return ret;
+void GameObject::SetColor(Vector3f color)
+{
+    m_color = color;
 }

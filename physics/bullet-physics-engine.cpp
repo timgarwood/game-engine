@@ -37,8 +37,8 @@ FrameCallbackResult BulletPhysicsEngine::NextFrame()
 {
     dynamicsWorld->stepSimulation(1.0f / 60.0f, 10);
 
-    // print positions of all objects
-    for (int j = dynamicsWorld->getNumCollisionObjects() - 1; j >= 0; j--)
+    // print njpositions of all objects
+    /*for (int j = dynamicsWorld->getNumCollisionObjects() - 1; j >= 0; j--)
     {
         btCollisionObject *obj = dynamicsWorld->getCollisionObjectArray()[j];
         btRigidBody *body = btRigidBody::upcast(obj);
@@ -53,6 +53,7 @@ FrameCallbackResult BulletPhysicsEngine::NextFrame()
         }
         printf("world pos object %d = %f,%f,%f\n", j, float(trans.getOrigin().getX()), float(trans.getOrigin().getY()), float(trans.getOrigin().getZ()));
     }
+    */
 
     return CONTINUE;
 }

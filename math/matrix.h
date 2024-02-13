@@ -3,6 +3,8 @@
 
 #include "vector.h"
 
+class btMatrix3x3;
+
 struct Matrix4f
 {
     float matrix[4][4];
@@ -18,6 +20,7 @@ struct Matrix4f
     void InitCameraTransform(const Vector3f &Pos, const Vector3f &Target, const Vector3f &Up);
     void InitTranslationTransform(float x, float y, float z);
     void SetIdentity();
+    void Set(btMatrix3x3 *btMatrix);
 };
 
 #endif

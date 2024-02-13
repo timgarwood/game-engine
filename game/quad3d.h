@@ -16,11 +16,9 @@ public:
     Quad3d(btCollisionShape *collisionShape, Vector3f center, float faceLength, float height, float depth);
     Quad3d(btCollisionShape *collisionShape, Vector3f center, float faceLength, float height, float depth, Vector3f color);
     Vector3f GetCenter();
-    Vector3f GetColor();
 
 private:
     Vector3f m_center;
-    Vector3f m_color;
 };
 
 #endif

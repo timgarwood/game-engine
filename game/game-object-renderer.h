@@ -24,7 +24,10 @@ private:
     std::vector<int> m_staticIndices;
 
     std::shared_ptr<ShaderProgramIF> m_shaderProgram;
+    GLuint m_viewLocation;
     GLuint m_transformationLocation;
+    GLuint m_startTransformLocation;
+    GLuint m_rotationLocation;
     GLuint m_colorLocation;
 };
 

@@ -30,8 +30,8 @@ void DebugSceneFactory::LoadScene(const string &filename)
     DebugSceneParser parser;
     DebugSceneData debugSceneData = parser.LoadDebugSceneData(filename);
 
-    Camera::Instance()->SetPosition(debugSceneData.cameraPosition);
-    Camera::Instance()->SetLookAt(debugSceneData.cameraLookAt);
+    //Camera::Instance()->SetPosition(debugSceneData.cameraPosition);
+    //Camera::Instance()->SetLookAt(debugSceneData.cameraLookAt);
 
     auto iter = debugSceneData.gameObjectDebugData.begin();
     for (; iter != debugSceneData.gameObjectDebugData.end(); ++iter)
@@ -40,7 +40,7 @@ void DebugSceneFactory::LoadScene(const string &filename)
         auto q3d = new Quad3d(collisionShape, iter->position, iter->width, iter->height, iter->depth, iter->color);
         q3d->SetMass(iter->mass);
         q3d->BuildRigidBody();
-        if (iter->isDynamic)
+        if (iter->mass != 0.f)
         {
             GameWorld::Instance()->AddDynamic(q3d);
         }

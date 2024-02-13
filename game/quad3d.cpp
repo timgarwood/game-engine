@@ -5,7 +5,7 @@ using namespace std;
 Quad3d::Quad3d(btCollisionShape *collisionShape, Vector3f center, float faceLength, float height, float depth, Vector3f color) : GameObject(collisionShape)
 {
     m_center = center;
-    m_color = color;
+    SetColor(color);
     SetStartPosition(center);
 
     float cx = m_center.x;
@@ -80,9 +80,4 @@ Quad3d::Quad3d(btCollisionShape *collisionShape, Vector3f center, float faceLeng
 Vector3f Quad3d::GetCenter()
 {
     return m_center;
-}
-
-Vector3f Quad3d::GetColor()
-{
-    return m_color;
 }

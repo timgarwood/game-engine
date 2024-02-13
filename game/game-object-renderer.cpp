@@ -96,7 +96,10 @@ void GameObjectRenderer::Init()
 
     m_shaderProgram->Enable();
 
+    m_viewLocation = (GLuint)m_shaderProgram->GetUniformLocation("gView");
     m_transformationLocation = (GLuint)m_shaderProgram->GetUniformLocation("gTransformation");
+    m_startTransformLocation = (GLuint)m_shaderProgram->GetUniformLocation("gStartOffset");
+    m_rotationLocation = (GLuint)m_shaderProgram->GetUniformLocation("gRotation");
     m_colorLocation = (GLuint)m_shaderProgram->GetUniformLocation("gColor");
 }
 
@@ -123,11 +126,21 @@ void GameObjectRenderer::Render()
                          0, 0, 1, 15,
                          0, 0, 0, 1);
 
-    Matrix4f transformation = perspectiveProjection * Camera::Instance()->GetMatrix() * translation;
+    Matrix4f view = perspectiveProjection * Camera::Instance()->GetMatrix() * translation;
 
     glBindBuffer(GL_ARRAY_BUFFER, m_staticVbo);
 
-    glUniformMatrix4fv(m_transformationLocation, 1, GL_TRUE, &transformation.matrix[0][0]);
+    Matrix4f staticTransformation;
+    Matrix4f staticStartOffset;
+    Matrix4f staticRotation;
+    staticTransformation.SetIdentity();
+    staticStartOffset.SetIdentity();
+    staticRotation.SetIdentity();
+
+    glUniformMatrix4fv(m_viewLocation, 1, GL_TRUE, &view.matrix[0][0]);
+    glUniformMatrix4fv(m_transformationLocation, 1, GL_FALSE, &staticTransformation.matrix[0][0]);
+    glUniformMatrix4fv(m_startTransformLocation, 1, GL_TRUE, &staticStartOffset.matrix[0][0]);
+    glUniformMatrix4fv(m_rotationLocation, 1, GL_TRUE, &staticRotation.matrix[0][0]);
     float staticColor[3];
     staticColor[0] = 0;
     staticColor[1] = 0;
@@ -154,22 +167,36 @@ void GameObjectRenderer::Render()
 
         glBufferData(GL_ARRAY_BUFFER, gameObjectVertices.size() * sizeof(Vector3f), &gameObjectVertices[0], GL_DYNAMIC_DRAW);
 
-        Matrix4f objTransform = (*iter)->GetPhysicsTransform();
-        //objTransform.SetIdentity();
-        //btRigidBody *rb = (*iter)->GetRigidBody();
-        //btTransform comp = rb->getCenterOfMassTransform();
-        //Matrix4f objTransform;
-        //objTransform.SetIdentity();
-        //objTransform.matrix[0][3] = comp[0];
-        //objTransform.matrix[1][3] = comp[1];
-        //objTransform.matrix[2][3] = comp[2];
-        Matrix4f dynTransformation = perspectiveProjection * Camera::Instance()->GetMatrix() * translation * objTransform;
+        Matrix4f startOffset = (*iter)->GetStartOffset();
 
-        glUniformMatrix4fv(m_transformationLocation, 1, GL_TRUE, &dynTransformation.matrix[0][0]);
+        Matrix4f rotation = (*iter)->GetRotation();
+        rotation.matrix[3][0] = 0;
+        rotation.matrix[3][1] = 0;
+        rotation.matrix[3][2] = 0;
+        rotation.matrix[3][3] = 1;
+
+        Vector3f vposition = (*iter)->GetPosition();
+
+        Matrix4f position;
+        position.SetIdentity();
+        position.matrix[0][3] = vposition.x + startOffset.matrix[0][3];
+        position.matrix[1][3] = vposition.y + startOffset.matrix[1][3];
+        position.matrix[2][3] = vposition.z + startOffset.matrix[2][3];
+
+        Matrix4f negStartOffset = startOffset;
+        negStartOffset.matrix[0][3] *= -1;
+        negStartOffset.matrix[1][3] *= -1;
+        negStartOffset.matrix[2][3] *= -1;
+
+        Matrix4f finalTransform = position * negStartOffset * rotation * startOffset;
+
+        glUniformMatrix4fv(m_viewLocation, 1, GL_TRUE, &view.matrix[0][0]);
+        glUniformMatrix4fv(m_transformationLocation, 1, GL_TRUE, &finalTransform.matrix[0][0]);
+        Vector3f color = (*iter)->GetColor();
         float dynColor[3];
-        dynColor[0] = 1;
-        dynColor[1] = 0;
-        dynColor[2] = 0;
+        dynColor[0] = color.x;
+        dynColor[1] = color.y;
+        dynColor[2] = color.z;
         glUniform3fv(m_colorLocation, 1, dynColor);
 
         glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 3, 0);

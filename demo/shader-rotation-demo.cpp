@@ -57,7 +57,7 @@ void ShaderRotationDemo::compile_shaders(GLuint *shaderProgram, GLuint *vertexSh
         exit(1);
     }
 
-    string vs = "#version 330 core\nlayout(location = 0) in vec3 Position;\nuniform mat4 gRotation;\nuniform mat4 gTranslation;\nvoid main()\n{\ngl_Position = gRotation * gTranslation * vec4(Position, 1.0);\n}\n";
+    string vs = "#version 330 core\nlayout(location = 0) in vec3 Position;\nuniform mat4 gRotation;\nuniform mat4 gTranslation;\nuniform mat4 gTranslation2;\nvoid main()\n{\ngl_Position = gTranslation2 * gRotation * gTranslation * vec4(Position, 1.0);\n}\n";
     string fs = "#version 330 core\nout vec4 FragColor;\nvoid main()\n{\nFragColor = vec4(1.0,0.0,0.0,0.0);\n}";
 
     add_shader(*shaderProgram, vertexShaderObject, vs.c_str(), GL_VERTEX_SHADER);
@@ -78,6 +78,7 @@ void ShaderRotationDemo::compile_shaders(GLuint *shaderProgram, GLuint *vertexSh
 
     m_rotationLocation = glGetUniformLocation(*shaderProgram, "gRotation");
     m_translationLocation = glGetUniformLocation(*shaderProgram, "gTranslation");
+    m_translation2Location = glGetUniformLocation(*shaderProgram, "gTranslation2");
     if (m_rotationLocation == -1)
     {
         cout << "Error getting uniform location of 'gRotation'" << endl;
@@ -176,6 +177,7 @@ void ShaderRotationDemo::DrawTriangle(Triangle &triangle)
 
     glUniformMatrix4fv(m_rotationLocation, 1, GL_TRUE, &triangle.rotationMatrix.matrix[0][0]);
     glUniformMatrix4fv(m_translationLocation, 1, GL_TRUE, &triangle.translationMatrix.matrix[0][0]);
+    glUniformMatrix4fv(m_translation2Location, 1, GL_TRUE, &triangle.translationMatrix2.matrix[0][0]);
 
     glBindBuffer(GL_ARRAY_BUFFER, m_triangle1.vbo);
     glBufferData(GL_ARRAY_BUFFER, sizeof(triangle.vertices), triangle.vertices, GL_DYNAMIC_DRAW);
@@ -193,6 +195,11 @@ void ShaderRotationDemo::DrawTriangle(Triangle &triangle)
 
 void ShaderRotationDemo::Render(void)
 {
+    static float xoffset = 0.0f;
+    xoffset += 0.001;
+    m_triangle1.translationMatrix2.SetIdentity();
+    m_triangle1.translationMatrix2.matrix[0][3] = xoffset;
+
     DrawTriangle(m_triangle1);
-    DrawTriangle(m_triangle2);
+    //    DrawTriangle(m_triangle2);
 }

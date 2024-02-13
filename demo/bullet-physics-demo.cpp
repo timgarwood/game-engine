@@ -7,6 +7,7 @@
 #include "game-world.h"
 #include "btBulletDynamicsCommon.h"
 #include "bullet-physics-engine.h"
+#include "debug-scene-factory.h"
 
 using namespace std;
 
@@ -37,20 +38,7 @@ BulletPhysicsDemo *BulletPhysicsDemo::Instance(void)
 
 void BulletPhysicsDemo::Init(void)
 {
-    btCollisionShape *cubeShape = new btBoxShape(btVector3(.5, .5, .5));
-    btCollisionShape *floorShape = new btBoxShape(btVector3(5, .05, 5));
-    Cube *c1 = new Cube(cubeShape, Vector3f(4, 50, 0), 1, RAND_COLOR);
-    c1->SetMass(1.0f);
-    c1->BuildRigidBody();
-    GameWorld::Instance()->AddDynamic(c1);
-    BulletPhysicsEngine::Instance()->AddGameObject(c1);
-
-    Quad3d *c2 = new Quad3d(floorShape, Vector3f(4, -20, 0), 10, .1, 10, RAND_COLOR);
-    c2->SetMass(0.0f);
-    c2->BuildRigidBody();
-    GameWorld::Instance()->AddStatic(c2);
-    BulletPhysicsEngine::Instance()->AddGameObject(c2);
-
+    DebugSceneFactory::Instance()->LoadScene("./debug/bullet-physics-demo.json");
     /*Cube *c3 = new Cube(cubeShape, Vector3f(0, 22, 0), 1, RAND_COLOR);
     c3->SetMass(1.0f);
     c3->BuildRigidBody();

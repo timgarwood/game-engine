@@ -19,6 +19,7 @@ private:
     GLuint m_shaderProgram;
     GLint m_rotationLocation;
     GLint m_translationLocation;
+    GLint m_translation2Location;
 
 public:
     static ShaderRotationDemo *Instance(void);

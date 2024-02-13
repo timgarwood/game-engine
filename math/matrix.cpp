@@ -1,5 +1,6 @@
 #include "matrix.h"
 #include <cstring> // memset
+#include "btMatrix3x3.h"
 
 Matrix4f::Matrix4f()
 {
@@ -149,4 +150,16 @@ void Matrix4f::SetIdentity()
     matrix[1][1] = 1;
     matrix[2][2] = 1;
     matrix[3][3] = 1;
+}
+
+void Matrix4f::Set(btMatrix3x3 *btMatrix)
+{
+    SetIdentity();
+    for (int r = 0; r < 3; ++r)
+    {
+        for (int c = 0; c < 3; ++c)
+        {
+            matrix[r][c] = (*btMatrix)[r][c];
+        }
+    }
 }
