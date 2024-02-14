@@ -10,16 +10,12 @@ public:
 
 private:
     static GameWorldIF *instance;
-    virtual void AddStatic(GameObjectIF *object);
-    virtual void AddDynamic(GameObjectIF *object);
-    virtual void RemoveStatic(GameObjectIF *object);
-    virtual void RemoveDynamic(GameObjectIF *object);
+    virtual void AddObject(GameObjectIF *object);
+    virtual void RemoveObject(GameObjectIF *object);
 
-    virtual std::vector<GameObjectIF *> GetStatics();
-    virtual std::vector<GameObjectIF *> GetDynamics();
+    virtual std::vector<GameObjectIF *> GetObjects();
 
-    std::vector<GameObjectIF *> m_statics;
-    std::vector<GameObjectIF *> m_dynamics;
+    std::vector<GameObjectIF *> m_objects;
 };
 
 #endif

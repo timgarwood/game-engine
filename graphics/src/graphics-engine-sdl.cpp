@@ -58,7 +58,7 @@ FrameCallbackResult GraphicsEngine::NextFrame(void)
         // TODO throw exception
     }
 
-    glClear(GL_COLOR_BUFFER_BIT);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     auto iter = m_render_callbacks.begin();
     for (; iter != m_render_callbacks.end(); ++iter)
@@ -86,6 +86,7 @@ void GraphicsEngine::Init(void)
     SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE, 8);
     SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE, 8);
     SDL_GL_SetAttribute(SDL_GL_ALPHA_SIZE, 8);
+    SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 32);
 
     // Must be done after glut is initialized!
     GLenum res = glewInit();

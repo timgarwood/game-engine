@@ -8,13 +8,10 @@ class GameObjectIF;
 class GameWorldIF
 {
 public:
-    virtual void AddStatic(GameObjectIF *object) = 0;
-    virtual void AddDynamic(GameObjectIF *object) = 0;
-    virtual void RemoveStatic(GameObjectIF *object) = 0;
-    virtual void RemoveDynamic(GameObjectIF *object) = 0;
+    virtual void AddObject(GameObjectIF *object) = 0;
+    virtual void RemoveObject(GameObjectIF *object) = 0;
 
-    virtual std::vector<GameObjectIF *> GetStatics() = 0;
-    virtual std::vector<GameObjectIF *> GetDynamics() = 0;
+    virtual std::vector<GameObjectIF *> GetObjects() = 0;
 };
 
 #endif

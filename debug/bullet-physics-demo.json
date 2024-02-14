@@ -20,7 +20,7 @@
                     "z": 0
                 },
                 "dim": {
-                    "width": 1,
+                    "width": 10,
                     "height": 1,
                     "depth": 1
                 },
@@ -116,7 +116,7 @@
                     "mass": 0.0,
                     "isDynamic": false
                 }
-            }
+            },
         ]
     }
 }

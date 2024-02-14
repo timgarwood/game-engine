@@ -41,15 +41,7 @@ void DebugSceneFactory::LoadScene(const string &filename)
         q3d->SetMass(iter->mass);
         q3d->SetStartRotation(iter->rotation.x, iter->rotation.y, iter->rotation.z);
         q3d->BuildRigidBody();
-        if (iter->mass != 0.f)
-        {
-            GameWorld::Instance()->AddDynamic(q3d);
-        }
-        else
-        {
-            GameWorld::Instance()->AddStatic(q3d);
-        }
-
+        GameWorld::Instance()->AddObject(q3d);
         BulletPhysicsEngine::Instance()->AddGameObject(q3d);
     }
 }

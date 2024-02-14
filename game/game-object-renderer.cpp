@@ -55,7 +55,7 @@ void GameObjectRenderer::Init()
     ShaderFactory::Instance()->LoadShaders("./demo/bullet-physics-demo-shaders.json");
     m_shaderProgram = ShaderFactory::Instance()->GetShaderProgram("main");
 
-    vector<GameObjectIF *> statics = GameWorld::Instance()->GetStatics();
+    /*vector<GameObjectIF *> statics = GameWorld::Instance()->GetStatics();
     auto iter = statics.begin();
     int vertexOffset = 0;
     for (; iter != statics.end(); ++iter)
@@ -77,22 +77,24 @@ void GameObjectRenderer::Init()
 
         vertexOffset += gameObjectVertices.size();
     }
+    */
 
     glEnable(GL_CULL_FACE);
+    glEnable(GL_DEPTH_TEST);
     glFrontFace(GL_CW);
     glCullFace(GL_BACK);
 
-    glGenBuffers(1, &m_staticVbo);
+    // glGenBuffers(1, &m_staticVbo);
     glGenBuffers(1, &m_dynamicVbo);
 
-    glBindBuffer(GL_ARRAY_BUFFER, m_staticVbo);
+    // glBindBuffer(GL_ARRAY_BUFFER, m_staticVbo);
 
-    glBufferData(GL_ARRAY_BUFFER, m_staticVertices.size() * sizeof(Vector3f), &m_staticVertices[0], GL_STATIC_DRAW);
+    // glBufferData(GL_ARRAY_BUFFER, m_staticVertices.size() * sizeof(Vector3f), &m_staticVertices[0], GL_STATIC_DRAW);
 
-    glGenBuffers(1, &m_staticIbo);
+    // glGenBuffers(1, &m_staticIbo);
     glGenBuffers(1, &m_dynamicIbo);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_staticIbo);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, m_staticIndices.size() * sizeof(int), &m_staticIndices[0], GL_STATIC_DRAW);
+    // glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_staticIbo);
+    // glBufferData(GL_ELEMENT_ARRAY_BUFFER, m_staticIndices.size() * sizeof(int), &m_staticIndices[0], GL_STATIC_DRAW);
 
     m_shaderProgram->Enable();
 
@@ -128,7 +130,7 @@ void GameObjectRenderer::Render()
 
     Matrix4f view = perspectiveProjection * Camera::Instance()->GetMatrix() * translation;
 
-    glBindBuffer(GL_ARRAY_BUFFER, m_staticVbo);
+    /*glBindBuffer(GL_ARRAY_BUFFER, m_staticVbo);
 
     Matrix4f staticTransformation;
     Matrix4f staticStartOffset;
@@ -146,17 +148,18 @@ void GameObjectRenderer::Render()
     staticColor[1] = 0;
     staticColor[2] = 1;
     glUniform3fv(m_colorLocation, 1, staticColor);
+    */
 
     glEnableVertexAttribArray(0);
 
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 3, 0);
 
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_staticIbo);
+    // glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_staticIbo);
 
-    glDrawElements(GL_TRIANGLES, 12 * 3 * m_staticVertices.size(), GL_UNSIGNED_INT, 0);
+    // glDrawElements(GL_TRIANGLES, 12 * 3 * m_staticVertices.size(), GL_UNSIGNED_INT, 0);
 
-    //draw dynamic objects
-    auto dynamics = GameWorld::Instance()->GetDynamics();
+    // draw dynamic objects
+    auto dynamics = GameWorld::Instance()->GetObjects();
     auto iter = dynamics.begin();
     for (; iter != dynamics.end(); ++iter)
     {

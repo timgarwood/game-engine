@@ -15,40 +15,21 @@ GameWorldIF *GameWorld::Instance()
     return instance;
 }
 
-void GameWorld::AddStatic(GameObjectIF *object)
+void GameWorld::AddObject(GameObjectIF *object)
 {
-    m_statics.push_back(object);
+    m_objects.push_back(object);
 }
 
-void GameWorld::AddDynamic(GameObjectIF *object)
+void GameWorld::RemoveObject(GameObjectIF *object)
 {
-    m_dynamics.push_back(object);
-}
-
-void GameWorld::RemoveStatic(GameObjectIF *object)
-{
-    auto iter = find(m_statics.begin(), m_statics.end(), object);
-    if (iter != m_statics.end())
+    auto iter = find(m_objects.begin(), m_objects.end(), object);
+    if (iter != m_objects.end())
     {
-        m_statics.erase(iter);
+        m_objects.erase(iter);
     }
 }
 
-void GameWorld::RemoveDynamic(GameObjectIF *object)
+vector<GameObjectIF *> GameWorld::GetObjects()
 {
-    auto iter = find(m_dynamics.begin(), m_dynamics.end(), object);
-    if (iter != m_dynamics.end())
-    {
-        m_dynamics.erase(iter);
-    }
-}
-
-vector<GameObjectIF *> GameWorld::GetStatics()
-{
-    return m_statics;
-}
-
-vector<GameObjectIF *> GameWorld::GetDynamics()
-{
-    return m_dynamics;
+    return m_objects;
 }
