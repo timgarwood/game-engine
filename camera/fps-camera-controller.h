@@ -10,6 +10,7 @@ public:
 
     FrameCallbackResult NextFrame();
     void MouseMoveCallback(int x, int y);
+    void WindowResized(int windowWidth, int windowHeight);
     void KeyDown(char key);
     void KeyUp(char key);
 
@@ -21,6 +22,8 @@ private:
     int m_lastMouseY;
     int m_nextMouseX;
     int m_nextMouseY;
+    int m_windowWidth;
+    int m_windowHeight;
 };
 
 #endif

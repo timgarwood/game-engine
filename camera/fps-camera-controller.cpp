@@ -8,10 +8,17 @@ FPSCameraController *FPSCameraController::s_instance = NULL;
 
 static float s_mouseSensitivity = 2.0;
 static float s_moveSensitivity = 1.0;
+static float s_moveX = 10;
+static float s_moveY = 10;
 
 static FrameCallbackResult fps_camera_controller_next_frame()
 {
     return FPSCameraController::Instance()->NextFrame();
+}
+
+static void camera_controller_window_resized(int windowWidth, int windowHeight)
+{
+    FPSCameraController::Instance()->WindowResized(windowWidth, windowHeight);
 }
 
 static void camera_controller_mouse_move_callback(int x, int y)
@@ -41,43 +48,40 @@ FPSCameraController *FPSCameraController::Instance()
 
 FPSCameraController::FPSCameraController(int windowWidth, int windowHeight)
 {
+    m_windowWidth = windowWidth;
+    m_windowHeight = windowHeight;
     Engine::Instance()->RegisterFrameCallback(fps_camera_controller_next_frame);
     SDLEventDispatcher::Instance()->RegisterMouseMoveCallback(camera_controller_mouse_move_callback);
     SDLEventDispatcher::Instance()->RegisterForKeyDown(camera_controller_key_down);
     SDLEventDispatcher::Instance()->RegisterForKeyUp(camera_controller_key_up);
+    SDLEventDispatcher::Instance()->RegisterForWindowResized(camera_controller_window_resized);
     m_lastMouseX = windowWidth / 2;
     m_lastMouseY = windowHeight / 2;
-    m_nextMouseX = -1;
-    m_nextMouseY = -1;
+    m_nextMouseX = m_lastMouseX;
+    m_nextMouseY = m_lastMouseY;
 }
 
 FrameCallbackResult FPSCameraController::NextFrame()
 {
     int xdiff = 0;
     int ydiff = 0;
-    if (m_nextMouseX >= 0 || m_nextMouseY >= 0)
+    if (m_nextMouseX < m_lastMouseX || m_nextMouseX <= 0)
     {
-        xdiff = m_nextMouseX - m_lastMouseX;
-        ydiff = m_nextMouseY - m_lastMouseY;
+        xdiff = -s_moveX;
+    }
+    else if (m_nextMouseX > m_lastMouseX || (m_nextMouseX >= (m_windowWidth - 1)))
+    {
+        xdiff = s_moveX;
+    }
 
-        m_lastMouseX = m_nextMouseX;
-        m_lastMouseY = m_nextMouseY;
-    }
-    /*
-    else
+    if (m_nextMouseY < m_lastMouseY || m_nextMouseY <= 0)
     {
-        // left edge
-        if (m_lastMouseX == 0)
-        {
-            xdiff = -1;
-        }
-        // right edge
-        else // if(m_lastMouseX == m_windowWidth)
-        {
-            xdiff = 1;
-        }
+        ydiff = -s_moveY;
     }
-    */
+    else if (m_nextMouseY > m_lastMouseY || m_nextMouseY >= (m_windowHeight - 1))
+    {
+        ydiff = s_moveY;
+    }
 
     if (xdiff != 0 || ydiff != 0)
     {
@@ -88,10 +92,16 @@ FrameCallbackResult FPSCameraController::NextFrame()
         Camera::Instance()->RotateY(yangle);
     }
 
-    m_nextMouseX = -1;
-    m_nextMouseY = -1;
+    m_lastMouseX = m_nextMouseX;
+    m_lastMouseY = m_nextMouseY;
 
     return CONTINUE;
+}
+
+void FPSCameraController::WindowResized(int windowWidth, int windowHeight)
+{
+    m_windowWidth = windowWidth;
+    m_windowHeight = windowHeight;
 }
 
 void FPSCameraController::MouseMoveCallback(int x, int y)
